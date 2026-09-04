@@ -1,0 +1,688 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recensement Tombes - Comité du Souvenir Français de Poligny</title>
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --danger-color: #e74c3c;
+            --success-color: #27ae60;
+            --info-color: #e67e22;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--light-bg);
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-radius: 8px;
+        }
+
+        /* --- En-tête / Header --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-branding {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-img {
+            max-height: 75px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 1.6rem;
+        }
+
+        .subtitle {
+            margin: 3px 0 0 0;
+            color: var(--secondary-color);
+            font-size: 0.95rem;
+            font-style: italic;
+        }
+
+        /* --- Section Accueil (Hero) --- */
+        .welcome-section {
+            background-color: #f1f4f7;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .welcome-photo {
+            width: 320px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+        }
+
+        .welcome-content {
+            flex: 1;
+        }
+
+        .welcome-content h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            outline: none;
+        }
+
+        .welcome-content p {
+            line-height: 1.6;
+            color: #444;
+            font-size: 0.95rem;
+            margin-bottom: 0;
+            outline: none;
+        }
+
+        /* Style spécifique pour l'édition de texte */
+        body.is-admin .editable-text {
+            border: 1px dashed var(--accent-color);
+            padding: 5px;
+            border-radius: 4px;
+            background-color: #fff;
+            cursor: text;
+        }
+
+        /* --- Boutons et Contrôles --- */
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        button, a.btn-link, label.btn-upload {
+            padding: 9px 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.2s;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.85rem;
+            line-height: normal;
+        }
+
+        button:hover, a.btn-link:hover, label.btn-upload:hover {
+            opacity: 0.9;
+        }
+
+        .btn-add { background-color: var(--success-color); }
+        .btn-export-xls { background-color: var(--accent-color); }
+        .btn-export-pdf { background-color: #8e44ad; }
+        .btn-contact { background-color: var(--info-color); }
+        .btn-auth { background-color: var(--secondary-color); }
+        .btn-upload { background-color: #16a085; }
+        .btn-save-text { background-color: #d35400; }
+        .btn-delete { background-color: var(--danger-color); padding: 4px 8px; font-size: 0.75em; margin-right: 4px;}
+        .btn-edit { background-color: var(--accent-color); padding: 4px 8px; font-size: 0.75em;}
+
+        .admin-only {
+            display: none !important;
+        }
+
+        body.is-admin .admin-only {
+            display: inline-block !important;
+        }
+        
+        body.is-admin td .admin-only {
+            display: inline !important;
+        }
+
+        /* --- Tableau --- */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            min-width: 1800px;
+            font-size: 0.8rem;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        tr:hover { background-color: #f1f1f1; }
+
+        /* --- Modale --- */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 100; 
+            left: 0; top: 0;
+            width: 100%; height: 100%; 
+            background-color: rgba(0,0,0,0.5); 
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 2% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 850px;
+            max-width: 95%;
+            border-radius: 8px;
+        }
+
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; margin-bottom: 3px; font-weight: bold; font-size: 0.85rem; }
+        .form-group input, .form-group textarea { width: 100%; padding: 6px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; }
+        .form-row { display: flex; gap: 10px; }
+        .form-row .form-group { flex: 1; }
+        .modal-actions { text-align: right; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover { color: black; }
+        .section-title { font-weight: bold; margin-top: 15px; margin-bottom: 10px; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 5px; }
+
+        /* --- Impression --- */
+        @media print {
+            body { background-color: white; padding: 0; }
+            .container { box-shadow: none; padding: 0; }
+            .welcome-section { border: 1px solid #ccc; background-color: transparent; }
+            .controls, .btn-delete, .btn-edit, th:last-child, td:last-child, #empty-msg { display: none !important; }
+            table { width: 100%; border: 1px solid #000; min-width: auto; font-size: 6pt; }
+            th, td { border: 1px solid #000; padding: 2px; white-space: normal; }
+            th { background-color: #f0f0f0 !important; color: black !important; }
+        }
+
+        @media (max-width: 768px) {
+            .welcome-section { flex-direction: column; text-align: center; }
+            .welcome-photo { width: 100%; height: auto; max-height: 200px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- EN-TÊTE -->
+    <header>
+        <div class="header-branding">
+            <img id="app-logo" src="https://via.placeholder.com/80?text=Logo" alt="Logo Souvenir Français" class="logo-img">
+            <div>
+                <h1>Recensement Tombes</h1>
+                <p class="subtitle">Comité du Souvenir Français de Poligny</p>
+            </div>
+        </div>
+        <div class="controls">
+            <button id="btn-auth" class="btn-auth" onclick="toggleAdmin()">Connexion Admin</button>
+            <button class="btn-add admin-only" onclick="openModal()">+ Ajouter</button>
+            
+            <!-- Modifications Admin : Images & Texte -->
+            <label for="logo-input" class="btn-upload admin-only" style="margin:0;">📷 Changer Logo</label>
+            <input type="file" id="logo-input" accept="image/*" class="admin-only" style="display:none;" onchange="uploadImage(event, 'comiteLogoData', 'app-logo')">
+            
+            <label for="photo-input" class="btn-upload admin-only" style="margin:0; background-color:#8e44ad;">🖼 Changer Photo</label>
+            <input type="file" id="photo-input" accept="image/*" class="admin-only" style="display:none;" onchange="uploadImage(event, 'comitePhotoData', 'welcome-photo')">
+
+            <button class="btn-save-text admin-only" onclick="saveWelcomeText()">💾 Enregistrer Texte</button>
+
+            <button class="btn-export-xls" onclick="exportToCSV()">Export CSV</button>
+            <button class="btn-export-pdf" onclick="window.print()">Imprimer / PDF</button>
+            <a href="mailto:souvenir_francais_poligny@hotmail.com?subject=Contact%20Recensement%20Tombes" class="btn-link btn-contact">✉ Contact</a>
+        </div>
+    </header>
+
+    <!-- SECTION ACCUEIL -->
+    <section class="welcome-section">
+        <img id="welcome-photo" src="https://via.placeholder.com/320x200?text=Photo+Souvenir+Francais" alt="Illustration Souvenir Français" class="welcome-photo">
+        <div class="welcome-content">
+            <h2 id="welcome-title" class="editable-text">Présentation de la base de recensement</h2>
+            <p id="welcome-text" class="editable-text">
+                Bienvenue sur l'application de recensement du Comité du Souvenir Français de Poligny. Ce registre numérique répertorie les sépultures, monuments et mémoire des soldats Morts pour la France ou honorés sur le secteur. Cet outil permet la sauvegarde, la consultation et la mise à jour pérenne de notre devoir de mémoire local.
+            </p>
+        </div>
+    </section>
+
+    <!-- TABLEAU DE DONNÉES -->
+    <div class="table-wrapper">
+        <table id="sepulture-table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Date Naissance</th>
+                    <th>Lieu Naissance</th>
+                    <th>Département</th>
+                    <th>Grade</th>
+                    <th>Mat. Recrut.</th>
+                    <th>Mat. Corps</th>
+                    <th>Unité</th>
+                    <th>Date Décès</th>
+                    <th>Cause Décès</th>
+                    <th>Lieu Décès</th>
+                    <th>Dépt/Pays Décès</th>
+                    <th>Lieu Sépulture</th>
+                    <th>Monument</th>
+                    <th>Age</th>
+                    <th>Mention</th>
+                    <th>Acte Naissance</th>
+                    <th>Acte Décès</th>
+                    <th>Fiche GENWEB</th>
+                    <th>Ordre Libération</th>
+                    <th>Fiche Matricule</th>
+                    <th>Mémoire Hommes</th>
+                    <th>Autres Références</th>
+                    <th>Colonne Y (Médailles/etc)</th>
+                    <th class="col-actions admin-only">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
+        <p id="empty-msg" style="text-align:center; color: #777; margin-top:20px;">Aucune donnée enregistrée.</p>
+    </div>
+</div>
+
+<!-- MODALE DE SAISIE -->
+<div id="entryModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle">Gestion Entrée</h2>
+        <form id="entryForm">
+            <input type="hidden" id="editIndex" value="-1">
+            
+            <div class="section-title">Identité</div>
+            <div class="form-row">
+                <div class="form-group"><label for="nom">Nom</label><input type="text" id="nom" required></div>
+                <div class="form-group"><label for="prenom">Prénom</label><input type="text" id="prenom" required></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="dateNaissance">Date Naissance</label><input type="text" id="dateNaissance"></div>
+                <div class="form-group"><label for="lieuNaissance">Lieu Naissance</label><input type="text" id="lieuNaissance"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="departement">Département</label><input type="text" id="departement"></div>
+            </div>
+
+            <div class="section-title">Militaire</div>
+            <div class="form-row">
+                <div class="form-group"><label for="grade">Grade</label><input type="text" id="grade"></div>
+                <div class="form-group"><label for="matRecrut">Matricule Recrut.</label><input type="text" id="matRecrut"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="matCorps">Matricule Corps</label><input type="text" id="matCorps"></div>
+                <div class="form-group"><label for="unite">Unité</label><input type="text" id="unite"></div>
+            </div>
+
+            <div class="section-title">Décès</div>
+            <div class="form-row">
+                <div class="form-group"><label for="dateDeces">Date Décès</label><input type="text" id="dateDeces"></div>
+                <div class="form-group"><label for="causeDeces">Cause</label><input type="text" id="causeDeces"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="lieuDeces">Lieu Décès</label><input type="text" id="lieuDeces"></div>
+                <div class="form-group"><label for="deptDeces">Dépt/Pays Décès</label><input type="text" id="deptDeces"></div>
+            </div>
+
+            <div class="section-title">Sépulture</div>
+            <div class="form-row">
+                <div class="form-group"><label for="lieuSepulture">Lieu Sépulture</label><input type="text" id="lieuSepulture" required></div>
+                <div class="form-group"><label for="monument">Monument</label><input type="text" id="monument"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="age">Age</label><input type="text" id="age"></div>
+                <div class="form-group"><label for="mention">Mention</label><input type="text" id="mention"></div>
+            </div>
+
+            <div class="section-title">Documents</div>
+            <div class="form-row">
+                <div class="form-group"><label for="acteNaissance">Acte Naissance</label><input type="text" id="acteNaissance"></div>
+                <div class="form-group"><label for="acteDeces">Acte Décès</label><input type="text" id="acteDeces"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="ficheGenWeb">Fiche GENWEB</label><input type="text" id="ficheGenWeb"></div>
+                <div class="form-group"><label for="ordreLiberation">Ordre Libération</label><input type="text" id="ordreLiberation"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="ficheMatricule">Fiche Matricule</label><input type="text" id="ficheMatricule"></div>
+                <div class="form-group"><label for="memoireHommes">Mémoire Hommes</label><input type="text" id="memoireHommes"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="autresRef">Autres Références</label><textarea id="autresRef" rows="2"></textarea></div>
+                <div class="form-group"><label for="colY">Colonne Y (Médailles/etc)</label><input type="text" id="colY"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" onclick="closeModal()" style="background-color: #95a5a6;">Annuler</button>
+                <button type="submit" class="btn-add">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const ADMIN_PASSWORD = "admin123";
+    let isAdmin = false;
+
+    const initialData = [
+        { nom: "VERRO", prenom: "René", dateNaissance: "", lieuNaissance: "Aussières", departement: "Jura", grade: "Soldat de 2ème classe", matRecrut: "", matCorps: "", unite: "22e régiment d'infanterie coloniale (22e RIC) - 6e compagnie", dateDeces: "", causeDeces: "Tué au combat", lieuDeces: "Long Phuoc province Baria", deptDeces: "Cochinchine", lieuSepulture: "Villers les bois", monument: "Oussières", age: "24 ans", mention: "Mort pour la France", acteNaissance: "", acteDeces: "", ficheGenWeb: "x", ordreLiberation: "", ficheMatricule: "", memoireHommes: "x", autresRef: "", colY: "" },
+        { nom: "BEAUD", prenom: "Gaston", dateNaissance: "", lieuNaissance: "Villers-les-Bois", departement: "Jura", grade: "sous-lieutenant", matRecrut: "1410", matCorps: "", unite: "", dateDeces: "", causeDeces: "Tué à l'ennemi", lieuDeces: "Sommelans", deptDeces: "Aisne", lieuSepulture: "Villers les bois", monument: "Villers les bois", age: "26 ans", mention: "Mort pour la France", acteNaissance: "x", acteDeces: "", ficheGenWeb: "x", ordreLiberation: "", ficheMatricule: "", memoireHommes: "x", autresRef: "AC 21 P 16337", colY: "" },
+        { nom: "PANOUILLOT", prenom: "Henri", dateNaissance: "20/05/1899", lieuNaissance: "Champrougier", departement: "Jura", grade: "", matRecrut: "", matCorps: "", unite: "", dateDeces: "", causeDeces: "Dès suite de maladie", lieuDeces: "Colmar", deptDeces: "Haut-Rhin", lieuSepulture: "Champrougier", monument: "", age: "", mention: "Mort pour la France", acteNaissance: "X", acteDeces: "", ficheGenWeb: "", ordreLiberation: "", ficheMatricule: "", memoireHommes: "x", autresRef: "", colY: "" }
+    ];
+
+    let entries = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Chargement du logo et de la photo
+        const savedLogo = localStorage.getItem('comiteLogoData');
+        if (savedLogo) document.getElementById('app-logo').src = savedLogo;
+
+        const savedPhoto = localStorage.getItem('comitePhotoData');
+        if (savedPhoto) document.getElementById('welcome-photo').src = savedPhoto;
+
+        // Chargement des textes d'accueil
+        const savedTitle = localStorage.getItem('comiteWelcomeTitle');
+        if (savedTitle) document.getElementById('welcome-title').innerText = savedTitle;
+
+        const savedText = localStorage.getItem('comiteWelcomeText');
+        if (savedText) document.getElementById('welcome-text').innerText = savedText;
+
+        // Chargement des données du tableau
+        const storedData = localStorage.getItem('tombesComiteFullDataComplete');
+        if (storedData) {
+            entries = JSON.parse(storedData);
+        } else {
+            entries = JSON.parse(JSON.stringify(initialData));
+            saveData();
+        }
+        renderTable();
+    });
+
+    function uploadImage(event, storageKey, elementId) {
+        if (!isAdmin) return;
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgData = e.target.result;
+                document.getElementById(elementId).src = imgData;
+                localStorage.setItem(storageKey, imgData);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function toggleAdmin() {
+        if (isAdmin) {
+            isAdmin = false;
+            document.body.classList.remove('is-admin');
+            document.getElementById('btn-auth').innerText = "Connexion Admin";
+            
+            // Désactiver l'édition directe du texte
+            document.getElementById('welcome-title').removeAttribute('contenteditable');
+            document.getElementById('welcome-text').removeAttribute('contenteditable');
+            
+            renderTable();
+        } else {
+            const pwd = prompt("Entrez le mot de passe administrateur :");
+            if (pwd === ADMIN_PASSWORD) {
+                isAdmin = true;
+                document.body.classList.add('is-admin');
+                document.getElementById('btn-auth').innerText = "Déconnexion Admin";
+                
+                // Activer l'édition directe du texte
+                document.getElementById('welcome-title').setAttribute('contenteditable', 'true');
+                document.getElementById('welcome-text').setAttribute('contenteditable', 'true');
+                
+                renderTable();
+            } else if (pwd !== null) {
+                alert("Mot de passe incorrect.");
+            }
+        }
+    }
+
+    function saveWelcomeText() {
+        if (!isAdmin) return;
+        const newTitle = document.getElementById('welcome-title').innerText;
+        const newText = document.getElementById('welcome-text').innerText;
+        
+        localStorage.setItem('comiteWelcomeTitle', newTitle);
+        localStorage.setItem('comiteWelcomeText', newText);
+        
+        alert("Modifications du texte d'accueil enregistrées avec succès !");
+    }
+
+    function saveData() {
+        localStorage.setItem('tombesComiteFullDataComplete', JSON.stringify(entries));
+        renderTable();
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('table-body');
+        const emptyMsg = document.getElementById('empty-msg');
+        tbody.innerHTML = '';
+
+        if (entries.length === 0) {
+            emptyMsg.style.display = 'block';
+        } else {
+            emptyMsg.style.display = 'none';
+            entries.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${escapeHtml(item.nom)}</td>
+                    <td>${escapeHtml(item.prenom)}</td>
+                    <td>${escapeHtml(item.dateNaissance)}</td>
+                    <td>${escapeHtml(item.lieuNaissance)}</td>
+                    <td>${escapeHtml(item.departement)}</td>
+                    <td>${escapeHtml(item.grade)}</td>
+                    <td>${escapeHtml(item.matRecrut)}</td>
+                    <td>${escapeHtml(item.matCorps)}</td>
+                    <td>${escapeHtml(item.unite)}</td>
+                    <td>${escapeHtml(item.dateDeces)}</td>
+                    <td>${escapeHtml(item.causeDeces)}</td>
+                    <td>${escapeHtml(item.lieuDeces)}</td>
+                    <td>${escapeHtml(item.deptDeces)}</td>
+                    <td>${escapeHtml(item.lieuSepulture)}</td>
+                    <td>${escapeHtml(item.monument)}</td>
+                    <td>${escapeHtml(item.age)}</td>
+                    <td>${escapeHtml(item.mention)}</td>
+                    <td>${escapeHtml(item.acteNaissance)}</td>
+                    <td>${escapeHtml(item.acteDeces)}</td>
+                    <td>${escapeHtml(item.ficheGenWeb)}</td>
+                    <td>${escapeHtml(item.ordreLiberation)}</td>
+                    <td>${escapeHtml(item.ficheMatricule)}</td>
+                    <td>${escapeHtml(item.memoireHommes)}</td>
+                    <td style="max-width:120px; word-wrap:break-word; white-space: pre-line;">${escapeHtml(item.autresRef)}</td>
+                    <td>${escapeHtml(item.colY)}</td>
+                    <td class="admin-only">
+                        <button class="btn-edit" onclick="editItem(${index})">✎</button>
+                        <button class="btn-delete" onclick="deleteItem(${index})">✖</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+    }
+
+    function escapeHtml(text) {
+        if (!text) return "";
+        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    function deleteItem(index) {
+        if (!isAdmin) return;
+        if(confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?')) {
+            entries.splice(index, 1);
+            saveData();
+        }
+    }
+
+    function editItem(index) {
+        if (!isAdmin) return;
+        const item = entries[index];
+        document.getElementById('editIndex').value = index;
+        document.getElementById('nom').value = item.nom;
+        document.getElementById('prenom').value = item.prenom;
+        document.getElementById('dateNaissance').value = item.dateNaissance;
+        document.getElementById('lieuNaissance').value = item.lieuNaissance;
+        document.getElementById('departement').value = item.departement;
+        document.getElementById('grade').value = item.grade;
+        document.getElementById('matRecrut').value = item.matRecrut;
+        document.getElementById('matCorps').value = item.matCorps;
+        document.getElementById('unite').value = item.unite;
+        document.getElementById('dateDeces').value = item.dateDeces;
+        document.getElementById('causeDeces').value = item.causeDeces;
+        document.getElementById('lieuDeces').value = item.lieuDeces;
+        document.getElementById('deptDeces').value = item.deptDeces;
+        document.getElementById('lieuSepulture').value = item.lieuSepulture;
+        document.getElementById('monument').value = item.monument;
+        document.getElementById('age').value = item.age;
+        document.getElementById('mention').value = item.mention;
+        document.getElementById('acteNaissance').value = item.acteNaissance;
+        document.getElementById('acteDeces').value = item.acteDeces;
+        document.getElementById('ficheGenWeb').value = item.ficheGenWeb;
+        document.getElementById('ordreLiberation').value = item.ordreLiberation;
+        document.getElementById('ficheMatricule').value = item.ficheMatricule;
+        document.getElementById('memoireHommes').value = item.memoireHommes;
+        document.getElementById('autresRef').value = item.autresRef;
+        document.getElementById('colY').value = item.colY;
+        
+        document.getElementById('modalTitle').innerText = "Modifier l'entrée";
+        document.getElementById('entryModal').style.display = 'block';
+    }
+
+    document.getElementById('entryForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!isAdmin) return;
+        const index = parseInt(document.getElementById('editIndex').value);
+        
+        const newItem = {
+            nom: document.getElementById('nom').value,
+            prenom: document.getElementById('prenom').value,
+            dateNaissance: document.getElementById('dateNaissance').value,
+            lieuNaissance: document.getElementById('lieuNaissance').value,
+            departement: document.getElementById('departement').value,
+            grade: document.getElementById('grade').value,
+            matRecrut: document.getElementById('matRecrut').value,
+            matCorps: document.getElementById('matCorps').value,
+            unite: document.getElementById('unite').value,
+            dateDeces: document.getElementById('dateDeces').value,
+            causeDeces: document.getElementById('causeDeces').value,
+            lieuDeces: document.getElementById('lieuDeces').value,
+            deptDeces: document.getElementById('deptDeces').value,
+            lieuSepulture: document.getElementById('lieuSepulture').value,
+            monument: document.getElementById('monument').value,
+            age: document.getElementById('age').value,
+            mention: document.getElementById('mention').value,
+            acteNaissance: document.getElementById('acteNaissance').value,
+            acteDeces: document.getElementById('acteDeces').value,
+            ficheGenWeb: document.getElementById('ficheGenWeb').value,
+            ordreLiberation: document.getElementById('ordreLiberation').value,
+            ficheMatricule: document.getElementById('ficheMatricule').value,
+            memoireHommes: document.getElementById('memoireHommes').value,
+            autresRef: document.getElementById('autresRef').value,
+            colY: document.getElementById('colY').value
+        };
+
+        if (index === -1) {
+            entries.push(newItem);
+        } else {
+            entries[index] = newItem;
+        }
+
+        saveData();
+        closeModal();
+    });
+
+    function openModal() {
+        if (!isAdmin) return;
+        document.getElementById('editIndex').value = -1;
+        document.getElementById('entryForm').reset();
+        document.getElementById('modalTitle').innerText = "Nouvelle Entrée";
+        document.getElementById('entryModal').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('entryModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('entryModal')) closeModal();
+    }
+
+    function exportToCSV() {
+        if (entries.length === 0) return alert("Aucune donnée à exporter.");
+        
+        const headers = ["Nom", "Prénom", "Date Naissance", "Lieu Naissance", "Département", "Grade", "Matricule Recrutement", "Matricule Corps", "Unité", "Date Décès", "Cause Décès", "Lieu Décès", "Dépt/Pays Décès", "Lieu Sépulture", "Monument", "Age", "Mention", "Acte Naissance", "Acte Décès", "Fiche GENWEB", "Ordre Libération", "Fiche Matricule", "Mémoire Hommes", "Autres Références", "Colonne Y"];
+        let csvContent = "data:text/csv;charset=utf-8," + headers.join(";") + "\n";
+        
+        entries.forEach(item => {
+            const row = [
+                `"${item.nom}"`, `"${item.prenom}"`, `"${item.dateNaissance}"`, `"${item.lieuNaissance}"`,
+                `"${item.departement}"`, `"${item.grade}"`, `"${item.matRecrut}"`, `"${item.matCorps}"`,
+                `"${item.unite}"`, `"${item.dateDeces}"`, `"${item.causeDeces}"`, `"${item.lieuDeces}"`,
+                `"${item.deptDeces}"`, `"${item.lieuSepulture}"`, `"${item.monument}"`, `"${item.age}"`,
+                `"${item.mention}"`, `"${item.acteNaissance}"`, `"${item.acteDeces}"`, `"${item.ficheGenWeb}"`,
+                `"${item.ordreLiberation}"`, `"${item.ficheMatricule}"`, `"${item.memoireHommes}"`,
+                `"${(item.autresRef || "").replace(/"/g, '""')}"`, `"${(item.colY || "").replace(/"/g, '""')}"`
+            ];
+            csvContent += row.join(";") + "\n";
+        });
+
+        const link = document.createElement("a");
+        link.setAttribute("href", encodeURI(csvContent));
+        link.setAttribute("download", "recensement_tombes_poligny.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+</body>
+</html>
+
