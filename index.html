@@ -1,0 +1,713 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recensement Tombes - Comité du Souvenir Français de Poligny</title>
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --danger-color: #e74c3c;
+            --success-color: #27ae60;
+            --info-color: #e67e22;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--light-bg);
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-radius: 8px;
+        }
+
+        /* --- En-tête / Header --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-branding {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-img {
+            max-height: 75px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 1.6rem;
+        }
+
+        .subtitle {
+            margin: 3px 0 0 0;
+            color: var(--secondary-color);
+            font-size: 0.95rem;
+            font-style: italic;
+        }
+
+        /* --- Section Accueil (Hero) --- */
+        .welcome-section {
+            background-color: #f1f4f7;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .welcome-photo {
+            width: 320px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+        }
+
+        .welcome-content {
+            flex: 1;
+        }
+
+        .welcome-content h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+        }
+
+        .welcome-content p {
+            line-height: 1.6;
+            color: #444;
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+
+        /* --- Boutons et Contrôles --- */
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        button, a.btn-link, label.btn-upload {
+            padding: 9px 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.2s;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.85rem;
+            line-height: normal;
+        }
+
+        button:hover, a.btn-link:hover, label.btn-upload:hover {
+            opacity: 0.9;
+        }
+
+        .btn-add { background-color: var(--success-color); }
+        .btn-export-xls { background-color: var(--accent-color); }
+        .btn-export-pdf { background-color: #8e44ad; }
+        .btn-contact { background-color: var(--info-color); }
+        .btn-auth { background-color: var(--secondary-color); }
+        .btn-upload { background-color: #16a085; }
+        .btn-delete { background-color: var(--danger-color); padding: 4px 8px; font-size: 0.75em; margin-right: 4px;}
+        .btn-edit { background-color: var(--accent-color); padding: 4px 8px; font-size: 0.75em;}
+
+        .admin-only {
+            display: none !important;
+        }
+
+        body.is-admin .admin-only {
+            display: inline-block !important;
+        }
+        
+        body.is-admin td .admin-only {
+            display: inline !important;
+        }
+
+        /* --- Tableau --- */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            min-width: 1800px;
+            font-size: 0.8rem;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        tr:hover { background-color: #f1f1f1; }
+
+        /* --- Modale --- */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 100; 
+            left: 0; top: 0;
+            width: 100%; height: 100%; 
+            background-color: rgba(0,0,0,0.5); 
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 2% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 850px;
+            max-width: 95%;
+            border-radius: 8px;
+        }
+
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; margin-bottom: 3px; font-weight: bold; font-size: 0.85rem; }
+        .form-group input, .form-group textarea { width: 100%; padding: 6px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; }
+        .form-row { display: flex; gap: 10px; }
+        .form-row .form-group { flex: 1; }
+        .modal-actions { text-align: right; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover { color: black; }
+        .section-title { font-weight: bold; margin-top: 15px; margin-bottom: 10px; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 5px; }
+
+        /* --- Impression --- */
+        @media print {
+            body { background-color: white; padding: 0; }
+            .container { box-shadow: none; padding: 0; }
+            .welcome-section { border: 1px solid #ccc; background-color: transparent; }
+            .controls, .btn-delete, .btn-edit, th:last-child, td:last-child, #empty-msg { display: none !important; }
+            table { width: 100%; border: 1px solid #000; min-width: auto; font-size: 6pt; }
+            th, td { border: 1px solid #000; padding: 2px; white-space: normal; }
+            th { background-color: #f0f0f0 !important; color: black !important; }
+        }
+
+        @media (max-width: 768px) {
+            .welcome-section { flex-direction: column; text-align: center; }
+            .welcome-photo { width: 100%; height: auto; max-height: 200px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="header-branding">
+            <img id="app-logo" src="images/logo.png" alt="Logo Souvenir Français" class="logo-img">
+            <div>
+                <h1>Recensement Tombes</h1>
+                <p class="subtitle">Comité du Souvenir Français de Poligny</p>
+            </div>
+        </div>
+        <div class="controls">
+            <button id="btn-auth" class="btn-auth" onclick="toggleAdmin()">Connexion Admin</button>
+            <button class="btn-add admin-only" onclick="openModal()">+ Ajouter</button>
+            
+            <label for="logo-input" class="btn-upload admin-only" style="margin:0;">📷 Changer Logo</label>
+            <input type="file" id="logo-input" accept="image/*" class="admin-only" style="display:none;" onchange="uploadImage(event, 'comiteLogoData', 'app-logo')">
+            
+            <label for="photo-input" class="btn-upload admin-only" style="margin:0; background-color:#8e44ad;">🖼 Changer Photo</label>
+            <input type="file" id="photo-input" accept="image/*" class="admin-only" style="display:none;" onchange="uploadImage(event, 'comitePhotoData', 'welcome-photo')">
+
+            <button class="btn-export-xls" onclick="exportToCSV()">Export CSV</button>
+            <button class="btn-export-pdf" onclick="window.print()">Imprimer / PDF</button>
+            <a href="mailto:souvenir_francais_poligny@hotmail.com?subject=Contact%20Recensement%20Tombes" class="btn-link btn-contact">✉ Contact</a>
+        </div>
+    </header>
+
+    <section class="welcome-section">
+        <img id="welcome-photo" src="images/souvenir.jpg" alt="Illustration Souvenir Français" class="welcome-photo">
+        <div class="welcome-content">
+            <h2>Présentation de la base de recensement</h2>
+            <p id="welcome-text">
+                Bienvenue sur l'application de recensement du Comité du Souvenir Français de Poligny. Ce registre numérique répertorie les sépultures, monuments et mémoire des soldats Morts pour la France ou honorés sur le secteur. Cet outil permet la sauvegarde, la consultation et la mise à jour pérenne de notre devoir de mémoire local.
+            </p>
+        </div>
+    </section>
+
+    <div class="table-wrapper">
+        <table id="sepulture-table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Date Naissance</th>
+                    <th>Lieu Naissance</th>
+                    <th>Département</th>
+                    <th>Grade</th>
+                    <th>Mat. Recrut.</th>
+                    <th>Mat. Corps</th>
+                    <th>Unité</th>
+                    <th>Date Décès</th>
+                    <th>Cause Décès</th>
+                    <th>Lieu Décès</th>
+                    <th>Dépt/Pays Décès</th>
+                    <th>Lieu Sépulture</th>
+                    <th>Monument</th>
+                    <th>Age</th>
+                    <th>Mention</th>
+                    <th>Acte Naissance</th>
+                    <th>Acte Décès</th>
+                    <th>Fiche GENWEB</th>
+                    <th>Ordre Libération</th>
+                    <th>Fiche Matricule</th>
+                    <th>Mémoire Hommes</th>
+                    <th>Autres Références</th>
+                    <th>Colonne Y (Médailles/etc)</th>
+                    <th class="col-actions admin-only">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
+        <p id="empty-msg" style="text-align:center; color: #777; margin-top:20px;">Aucune donnée enregistrée.</p>
+    </div>
+</div>
+
+<div id="entryModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle">Gestion Entrée</h2>
+        <form id="entryForm">
+            <input type="hidden" id="editIndex" value="-1">
+            
+            <div class="section-title">Identité</div>
+            <div class="form-row">
+                <div class="form-group"><label for="nom">Nom</label><input type="text" id="nom" required></div>
+                <div class="form-group"><label for="prenom">Prénom</label><input type="text" id="prenom" required></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="dateNaissance">Date Naissance</label><input type="text" id="dateNaissance"></div>
+                <div class="form-group"><label for="lieuNaissance">Lieu Naissance</label><input type="text" id="lieuNaissance"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="departement">Département</label><input type="text" id="departement"></div>
+            </div>
+
+            <div class="section-title">Militaire</div>
+            <div class="form-row">
+                <div class="form-group"><label for="grade">Grade</label><input type="text" id="grade"></div>
+                <div class="form-group"><label for="matRecrut">Matricule Recrut.</label><input type="text" id="matRecrut"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="matCorps">Matricule Corps</label><input type="text" id="matCorps"></div>
+                <div class="form-group"><label for="unite">Unité</label><input type="text" id="unite"></div>
+            </div>
+
+            <div class="section-title">Décès</div>
+            <div class="form-row">
+                <div class="form-group"><label for="dateDeces">Date Décès</label><input type="text" id="dateDeces"></div>
+                <div class="form-group"><label for="causeDeces">Cause</label><input type="text" id="causeDeces"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="lieuDeces">Lieu Décès</label><input type="text" id="lieuDeces"></div>
+                <div class="form-group"><label for="deptDeces">Dépt/Pays Décès</label><input type="text" id="deptDeces"></div>
+            </div>
+
+            <div class="section-title">Sépulture</div>
+            <div class="form-row">
+                <div class="form-group"><label for="lieuSepulture">Lieu Sépulture</label><input type="text" id="lieuSepulture" required></div>
+                <div class="form-group"><label for="monument">Monument</label><input type="text" id="monument"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="age">Age</label><input type="text" id="age"></div>
+                <div class="form-group"><label for="mention">Mention</label><input type="text" id="mention"></div>
+            </div>
+
+            <div class="section-title">Documents</div>
+            <div class="form-row">
+                <div class="form-group"><label for="acteNaissance">Acte Naissance</label><input type="text" id="acteNaissance"></div>
+                <div class="form-group"><label for="acteDeces">Acte Décès</label><input type="text" id="acteDeces"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="ficheGenWeb">Fiche GENWEB</label><input type="text" id="ficheGenWeb"></div>
+                <div class="form-group"><label for="ordreLiberation">Ordre Libération</label><input type="text" id="ordreLiberation"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="ficheMatricule">Fiche Matricule</label><input type="text" id="ficheMatricule"></div>
+                <div class="form-group"><label for="memoireHommes">Mémoire Hommes</label><input type="text" id="memoireHommes"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label for="autresRef">Autres Références</label><textarea id="autresRef" rows="2"></textarea></div>
+                <div class="form-group"><label for="colY">Colonne Y (Médailles/etc)</label><input type="text" id="colY"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" onclick="closeModal()" style="background-color: #95a5a6;">Annuler</button>
+                <button type="submit" class="btn-add">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const ADMIN_PASSWORD = "admin123";
+    let isAdmin = false;
+
+    const initialData = [
+        {"nom": "VERRO", "prenom": "René", "dateNaissance": "29/03/1928", "lieuNaissance": "Aussières", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "", "matCorps": "", "unite": "22e régiment d'infanterie coloniale (22e RIC) - 6e compagnie", "dateDeces": "01/05/1952", "causeDeces": "Tué au combat", "lieuDeces": "Long Phuoc province Baria", "deptDeces": "Cochinchine", "lieuSepulture": "Villers les bois", "monument": "Oussières", "age": "24 ans", "mention": "Mort pour la France", "acteNaissance": "", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "LOMBARD", "prenom": "Louis", "dateNaissance": "25/01/1840", "lieuNaissance": "Oussières", "departement": "Jura", "grade": "", "matRecrut": "", "matCorps": "", "unite": "", "dateDeces": "19/06/1918", "causeDeces": "", "lieuDeces": "", "deptDeces": "", "lieuSepulture": "Villers les bois", "monument": "", "age": "", "mention": "", "acteNaissance": "", "acteDeces": "", "ficheGenWeb": "", "ordreLiberation": "", "ficheMatricule": "", "memoireHommes": "", "autresRef": "", "colY": "Rien trouvé"},
+        {"nom": "CORNEBOIS", "prenom": "Marcel Joseph Fernand", "dateNaissance": "16/09/1898", "lieuNaissance": "Champrougier", "departement": "Jura", "grade": "Caporal", "matRecrut": "38", "matCorps": "11985", "unite": "6e bataillon de chasseurs à pied (6e BCP)", "dateDeces": "13/05/1918", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Cachy", "deptDeces": "Somme", "lieuSepulture": "Villers les bois", "monument": "Champrougier", "age": "20 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "VOIRIN", "prenom": "Joseph Alphonse", "dateNaissance": "04/05/1895", "lieuNaissance": "Villers les bois", "departement": "Jura", "grade": "Soldat de 1ère classe", "matRecrut": "1537", "matCorps": "07436", "unite": "133e régiment d'infanterie (133e RI)", "dateDeces": "23/04/1918", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Castel - secteur de Rouvrel", "deptDeces": "Somme", "lieuSepulture": "Villers les bois", "monument": "Villers les bois", "age": "23 ans", "mention": "Mort pour la France", "acteNaissance": "", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "AC 21 P 170942", "colY": ""},
+        {"nom": "PERREAUT", "prenom": "Léon Emile Auguste", "dateNaissance": "28/01/1891", "lieuNaissance": "Villers-les-Bois", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1284", "matCorps": "16327", "unite": "172e régiment d'infanterie (172e RI)", "dateDeces": "12/03/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Bois de Le Prêtre", "deptDeces": "Meurthe-et-Moselle", "lieuSepulture": "Villers les bois", "monument": "Villers les bois", "age": "24 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "AC 21 P 130722", "colY": ""},
+        {"nom": "GENET", "prenom": "Maxime Emile Henri", "dateNaissance": "16/09/1896", "lieuNaissance": "Villers-les-Bois", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "820", "matCorps": "13328", "unite": "44e régiment d'infanterie (44e RI)", "dateDeces": "03/09/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Fouquesourt", "deptDeces": "Somme", "lieuSepulture": "Villers les bois", "monument": "Villers les bois", "age": "20 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "BEAUD", "prenom": "Gaston", "dateNaissance": "06/02/1888", "lieuNaissance": "Villers-les-Bois", "departement": "Jura", "grade": "Sous-lieutenant", "matRecrut": "1410", "matCorps": "5300", "unite": "44e régiment d'infanterie (44e RI)", "dateDeces": "20/07/1918", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Sommelans", "deptDeces": "Aisne", "lieuSepulture": "Villers les bois", "monument": "Villers les bois", "age": "30 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "AC 21 P 16337", "colY": ""},
+        {"nom": "RUDE", "prenom": "Joseph Alphonse", "dateNaissance": "02/09/1888", "lieuNaissance": "Mouthier-en-Bresse", "departement": "Saône-et-Loire", "grade": "Soldat de 2ème classe", "matRecrut": "1295", "matCorps": "02570", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Marne", "deptDeces": "Marne", "lieuSepulture": "Villers les bois", "monument": "Villers les bois", "age": "27 ans", "mention": "Mort pour la France", "acteNaissance": "", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "PERREAUT", "prenom": "Marcel Antoine Félix", "dateNaissance": "16/01/1893", "lieuNaissance": "Villers-les-Bois", "departement": "Jura", "grade": "Caporal", "matRecrut": "1284", "matCorps": "5500", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "03/03/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Vaux-devant-Damloup", "deptDeces": "Meuse", "lieuSepulture": "Villers les bois", "monument": "Villers les bois", "age": "23 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "AC 21 P 130724", "colY": ""},
+        {"nom": "BERNARD", "prenom": "Auguste Emile", "dateNaissance": "24/09/1880", "lieuNaissance": "Tassenières", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "281", "matCorps": "0513", "unite": "54e régiment d'infanterie territoriale (54e RIT)", "dateDeces": "12/10/1918", "causeDeces": "Maladie contractée en service", "lieuDeces": "Bar-le-Duc", "deptDeces": "Meuse", "lieuSepulture": "Tassenières", "monument": "Tassenières", "age": "38 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "CORNEBOIS", "prenom": "Louis Joseph Marie", "dateNaissance": "22/04/1879", "lieuNaissance": "Champrougier", "departement": "Jura", "grade": "Soldat", "matRecrut": "824", "matCorps": "17387", "unite": "54e régiment d'infanterie (54e RI)", "dateDeces": "18/06/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Calonne", "deptDeces": "Meuse", "lieuSepulture": "Champrougier", "monument": "Champrougier", "age": "36 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "PANOUILLOT", "prenom": "Henri", "dateNaissance": "20/05/1899", "lieuNaissance": "Champrougier", "departement": "Jura", "grade": "Soldat", "matRecrut": "358", "matCorps": "15371", "unite": "158e régiment d'infanterie (158e RI)", "dateDeces": "02/08/1921", "causeDeces": "Maladie contractée en service", "lieuDeces": "Colmar", "deptDeces": "Haut-Rhin", "lieuSepulture": "Champrougier", "monument": "Champrougier", "age": "22 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "GEOFFROY", "prenom": "Désiré Charles Félix", "dateNaissance": "27/12/1890", "lieuNaissance": "Monay", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1261", "matCorps": "2525", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "18/11/1914", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Kremker - Ypres", "deptDeces": "Belgique", "lieuSepulture": "Monay", "monument": "Monay", "age": "23 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "GEOFFROY", "prenom": "Jean Marie Georges", "dateNaissance": "04/04/1893", "lieuNaissance": "Monay", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1262", "matCorps": "5509", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "03/03/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Vaux-devant-Damloup", "deptDeces": "Meuse", "lieuSepulture": "Monay", "monument": "Monay", "age": "22 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "MOUGET", "prenom": "Georges Paul Auguste", "dateNaissance": "05/03/1894", "lieuNaissance": "Bersaillin", "departement": "Jura", "grade": "Sergent", "matRecrut": "1009", "matCorps": "7092", "unite": "60e régiment d'infanterie (60e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Bersaillin", "monument": "Bersaillin", "age": "21 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "BARTHELET", "prenom": "Auguste Marie Joseph", "dateNaissance": "06/03/1897", "lieuNaissance": "Bersaillin", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "12", "matCorps": "18021", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "23/10/1917", "causeDeces": "Tué à l'ennemi", "lieuDeces": "La Malmaison", "deptDeces": "Aisne", "lieuSepulture": "Bersaillin", "monument": "Bersaillin", "age": "20 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "GABET", "prenom": "Jules Marie Emile", "dateNaissance": "16/09/1892", "lieuNaissance": "Monay", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1256", "matCorps": "4261", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "23/06/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Ablain-Saint-Nazaire", "deptDeces": "Pas-de-Calais", "lieuSepulture": "Bersaillin", "monument": "Monay", "age": "22 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "PANOUILLOT", "prenom": "Marcel Denis", "dateNaissance": "09/10/1896", "lieuNaissance": "Biefmorin", "departement": "Jura", "grade": "Caporal", "matRecrut": "859", "matCorps": "11915", "unite": "170e régiment d'infanterie (170e RI)", "dateDeces": "23/03/1918", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Ugny-le-Gay", "deptDeces": "Aisne", "lieuSepulture": "Biefmorin", "monument": "Biefmorin", "age": "21 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "FAIVRE", "prenom": "Georges Henri", "dateNaissance": "12/07/1887", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1223", "matCorps": "05777", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Biefmorin", "monument": "Biefmorin", "age": "28 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "GIRARDOT", "prenom": "Jules Joseph Denis", "dateNaissance": "24/09/1892", "lieuNaissance": "Biefmorin", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1268", "matCorps": "4267", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "03/03/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Vaux-devant-Damloup", "deptDeces": "Meuse", "lieuSepulture": "Biefmorin", "monument": "Biefmorin", "age": "23 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "SORDET", "prenom": "Séraphin Marie Maurice", "dateNaissance": "04/09/1888", "lieuNaissance": "Sellières", "departement": "Jura", "grade": "Caporal", "matRecrut": "1307", "matCorps": "04938", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Biefmorin", "monument": "Sellières", "age": "27 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "JEANNERET", "prenom": "Marius Pierre Marie", "dateNaissance": "22/02/1895", "lieuNaissance": "Monay", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1516", "matCorps": "8902", "unite": "172e régiment d'infanterie (172e RI)", "dateDeces": "15/12/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Bezonvaux", "deptDeces": "Meuse", "lieuSepulture": "Monay", "monument": "Monay", "age": "21 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "GUY", "prenom": "Léon Philibert Auguste", "dateNaissance": "07/11/1897", "lieuNaissance": "Monay", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "388", "matCorps": "25816", "unite": "35e régiment d'infanterie (35e RI)", "dateDeces": "22/07/1918", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Parcy-et-Tigny", "deptDeces": "Aisne", "lieuSepulture": "Monay", "monument": "Monay", "age": "20 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "BOURGEOIS", "prenom": "René Auguste Germain", "dateNaissance": "28/05/1897", "lieuNaissance": "Darbonnay", "departement": "Jura", "grade": "Chasseur de 2ème classe", "matRecrut": "131", "matCorps": "7009", "unite": "18e bataillon de chasseurs à pied (18e BCP)", "dateDeces": "12/06/1918", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Saint-Maur", "deptDeces": "Oise", "lieuSepulture": "Darbonnay", "monument": "Darbonnay", "age": "21 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "GAUDILLAT", "prenom": "Louis Joseph Auguste", "dateNaissance": "23/04/1888", "lieuNaissance": "Passenans", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1236", "matCorps": "05177", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Passenans", "monument": "Passenans", "age": "27 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "MERY", "prenom": "Edmond Henri Constant", "dateNaissance": "20/10/1880", "lieuNaissance": "Passenans", "departement": "Jura", "grade": "Caporal", "matRecrut": "382", "matCorps": "05763", "unite": "54e régiment d'infanterie territoriale (54e RIT)", "dateDeces": "14/09/1916", "causeDeces": "Suites de blessures de guerre", "lieuDeces": "Dugny-sur-Meuse", "deptDeces": "Meuse", "lieuSepulture": "Passenans", "monument": "Passenans", "age": "35 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "SAINT VOIRIN", "prenom": "Marius Pierre Germain", "dateNaissance": "28/05/1897", "lieuNaissance": "Passenans", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "644", "matCorps": "11986", "unite": "133e régiment d'infanterie (133e RI)", "dateDeces": "18/04/1917", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Laffaux", "deptDeces": "Aisne", "lieuSepulture": "Passenans", "monument": "Passenans", "age": "19 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "AUBERT", "prenom": "Eugène Joseph Fernand", "dateNaissance": "28/09/1894", "lieuNaissance": "Sellières", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "753", "matCorps": "13515", "unite": "158e régiment d'infanterie (158e RI)", "dateDeces": "02/09/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Berny-en-Santerre", "deptDeces": "Somme", "lieuSepulture": "Passenans", "monument": "Passenans", "age": "21 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "PETITJEAN", "prenom": "Marc François Emile", "dateNaissance": "07/10/1887", "lieuNaissance": "Saint-Lothain", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1290", "matCorps": "05786", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Saint-Lothain", "monument": "Saint-Lothain", "age": "27 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "VOIRET", "prenom": "Paul Henri Alexis", "dateNaissance": "18/07/1883", "lieuNaissance": "Frontenay", "departement": "Jura", "grade": "Caporal", "matRecrut": "1198", "matCorps": "05990", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Saint-Lothain", "monument": "Saint-Lothain", "age": "32 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "BOURGEOIS", "prenom": "Désiré Charles Emile", "dateNaissance": "08/10/1890", "lieuNaissance": "Saint-Lothain", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1225", "matCorps": "4268", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "03/03/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Vaux-devant-Damloup", "deptDeces": "Meuse", "lieuSepulture": "Saint-Lothain", "monument": "Saint-Lothain", "age": "25 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "GIRARD", "prenom": "Louis Henri Marcel", "dateNaissance": "04/09/1894", "lieuNaissance": "Saint-Lothain", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "974", "matCorps": "7093", "unite": "60e régiment d'infanterie (60e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Saint-Lothain", "monument": "Saint-Lothain", "age": "21 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "MERY", "prenom": "Claude Joseph Alexis", "dateNaissance": "29/03/1887", "lieuNaissance": "Passenans", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1280", "matCorps": "05779", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Passenans", "monument": "Passenans", "age": "28 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "CATTENOT", "prenom": "Auguste Marie Joseph", "dateNaissance": "19/03/1893", "lieuNaissance": "Miéry", "departement": "Jura", "grade": "Chasseur de 2ème classe", "matRecrut": "1231", "matCorps": "4161", "unite": "11e bataillon de chasseurs à pied (11e BCP)", "dateDeces": "21/06/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Metzeral", "deptDeces": "Haut-Rhin", "lieuSepulture": "Miéry", "monument": "Miéry", "age": "22 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "CATTENOT", "prenom": "Jules Joseph Henri", "dateNaissance": "28/11/1896", "lieuNaissance": "Miéry", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "787", "matCorps": "13143", "unite": "44e régiment d'infanterie (44e RI)", "dateDeces": "18/04/1917", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Ailles", "deptDeces": "Aisne", "lieuSepulture": "Miéry", "monument": "Miéry", "age": "20 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "JACQUIN", "prenom": "Paul Henri Emile", "dateNaissance": "15/01/1896", "lieuNaissance": "Miéry", "departement": "Jura", "grade": "Chasseur de 2ème classe", "matRecrut": "831", "matCorps": "7092", "unite": "18e bataillon de chasseurs à pied (18e BCP)", "dateDeces": "03/09/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Barleux", "deptDeces": "Somme", "lieuSepulture": "Miéry", "monument": "Miéry", "age": "20 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "COLIN", "prenom": "Gaston Constant Léon", "dateNaissance": "16/06/1894", "lieuNaissance": "Miéry", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "930", "matCorps": "5505", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "03/03/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Vaux-devant-Damloup", "deptDeces": "Meuse", "lieuSepulture": "Miéry", "monument": "Miéry", "age": "21 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "ROUSSEL", "prenom": "Edouard Louis", "dateNaissance": "04/08/1892", "lieuNaissance": "Plasne", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1306", "matCorps": "4266", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "19/08/1914", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Abreschviller", "deptDeces": "Moselle", "lieuSepulture": "Plasne", "monument": "Plasne", "age": "22 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "SAINT-SULPICE", "prenom": "Jean Pierre Marie Francisque", "dateNaissance": "17/12/1895", "lieuNaissance": "Plasne", "departement": "Jura", "grade": "Chasseur de 2ème classe", "matRecrut": "1549", "matCorps": "012015", "unite": "115e bataillon de chasseurs à pied (115e BCP)", "dateDeces": "12/03/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Bois des Corbeaux", "deptDeces": "Meuse", "lieuSepulture": "Plasne", "monument": "Plasne", "age": "20 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "BOURGEOIS", "prenom": "Léon Philibert Joseph", "dateNaissance": "16/03/1893", "lieuNaissance": "Plasne", "departement": "Jura", "grade": "Caporal", "matRecrut": "1228", "matCorps": "6736", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "23/10/1917", "causeDeces": "Tué à l'ennemi", "lieuDeces": "La Malmaison", "deptDeces": "Aisne", "lieuSepulture": "Plasne", "monument": "Plasne", "age": "24 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "GENET", "prenom": "Paul François Auguste", "dateNaissance": "04/09/1891", "lieuNaissance": "Plasne", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1258", "matCorps": "2526", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "03/03/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Vaux-devant-Damloup", "deptDeces": "Meuse", "lieuSepulture": "Plasne", "monument": "Plasne", "age": "24 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "CATTENOT", "prenom": "Emile Alexis François", "dateNaissance": "08/04/1887", "lieuNaissance": "Barretaine", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1214", "matCorps": "05767", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Barretaine", "monument": "Barretaine", "age": "28 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "CHARBONNIER", "prenom": "Denis Philibert Désiré", "dateNaissance": "26/08/1890", "lieuNaissance": "Barretaine", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1233", "matCorps": "2523", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "25/09/1914", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Barretaine", "monument": "Barretaine", "age": "24 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "ROBILLARD", "prenom": "Paul Emile Auguste", "dateNaissance": "21/07/1895", "lieuNaissance": "Chaussenans", "departement": "Jura", "grade": "Caporal", "matRecrut": "1543", "matCorps": "10090", "unite": "172e régiment d'infanterie (172e RI)", "dateDeces": "08/10/1918", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Saint-Etienne-à-Arnes", "deptDeces": "Ardennes", "lieuSepulture": "Chaussenans", "monument": "Chaussenans", "age": "23 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "ROUX", "prenom": "Joseph Denis Auguste", "dateNaissance": "28/10/1888", "lieuNaissance": "Chaussenans", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1294", "matCorps": "05790", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Chaussenans", "monument": "Chaussenans", "age": "26 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "JACQUIN", "prenom": "Jules Joseph Denis", "dateNaissance": "24/09/1887", "lieuNaissance": "Chamole", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1268", "matCorps": "05776", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Chamole", "monument": "Chamole", "age": "28 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "JACQUIN", "prenom": "Louis Denis Francisque", "dateNaissance": "04/10/1891", "lieuNaissance": "Chamole", "departement": "Jura", "grade": "Caporal", "matRecrut": "1269", "matCorps": "2527", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "13/05/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Ablain-Saint-Nazaire", "deptDeces": "Pas-de-Calais", "lieuSepulture": "Chamole", "monument": "Chamole", "age": "23 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "BOUVERET", "prenom": "Georges Maurice Germain", "dateNaissance": "28/05/1898", "lieuNaissance": "Chamole", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "124", "matCorps": "16189", "unite": "133e régiment d'infanterie (133e RI)", "dateDeces": "09/06/1918", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Ressons-sur-Matz", "deptDeces": "Oise", "lieuSepulture": "Chamole", "monument": "Chamole", "age": "20 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "CHAMPENOIS", "prenom": "Maurice Henri Bernard", "dateNaissance": "20/08/1897", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Sergent", "matRecrut": "184", "matCorps": "11964", "unite": "133e régiment d'infanterie (133e RI)", "dateDeces": "01/06/1918", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Chaudun", "deptDeces": "Aisne", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "20 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "GABET", "prenom": "Paul Henri Alexis", "dateNaissance": "04/08/1895", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1503", "matCorps": "01429", "unite": "172e régiment d'infanterie (172e RI)", "dateDeces": "12/03/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Bois de Le Prêtre", "deptDeces": "Meurthe-et-Moselle", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "19 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "MATHIEU", "prenom": "Henri François Philibert", "dateNaissance": "09/01/1890", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Caporal", "matRecrut": "1278", "matCorps": "2524", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "23/06/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Ablain-Saint-Nazaire", "deptDeces": "Pas-de-Calais", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "25 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "PECHEUR", "prenom": "Jules Pierre Emile", "dateNaissance": "29/06/1888", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Caporal", "matRecrut": "1283", "matCorps": "05785", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "27 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "MONNOT", "prenom": "Lucien Emile Francisque", "dateNaissance": "12/03/1893", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1282", "matCorps": "5507", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "03/03/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Vaux-devant-Damloup", "deptDeces": "Meuse", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "22 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "GEOFFROY", "prenom": "Léon Philibert François", "dateNaissance": "14/03/1888", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1253", "matCorps": "05772", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "27 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "SAINT-SULPICE", "prenom": "Charles Félix Henri", "dateNaissance": "18/05/1891", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1301", "matCorps": "2522", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "03/03/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Vaux-devant-Damloup", "deptDeces": "Meuse", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "24 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "MALLEN", "prenom": "Marius Pierre Marie", "dateNaissance": "12/02/1896", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "848", "matCorps": "11984", "unite": "133e régiment d'infanterie (133e RI)", "dateDeces": "18/04/1917", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Laffaux", "deptDeces": "Aisne", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "21 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "GRAPPE", "prenom": "Paul Henri François", "dateNaissance": "02/04/1897", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "371", "matCorps": "18020", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "23/10/1917", "causeDeces": "Tué à l'ennemi", "lieuDeces": "La Malmaison", "deptDeces": "Aisne", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "20 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "BOUILLET", "prenom": "Jules Joseph Denis", "dateNaissance": "08/12/1889", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1212", "matCorps": "05765", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "25 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "BERNARD", "prenom": "Denis Philibert Auguste", "dateNaissance": "24/11/1888", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1206", "matCorps": "05764", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "26 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "GIRARD", "prenom": "Auguste Marie Francisque", "dateNaissance": "21/01/1893", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1263", "matCorps": "5506", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "03/03/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Vaux-devant-Damloup", "deptDeces": "Meuse", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "23 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "DOUBEY", "prenom": "Léon François Denis", "dateNaissance": "26/02/1892", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Caporal", "matRecrut": "1248", "matCorps": "4263", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "03/03/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Vaux-devant-Damloup", "deptDeces": "Meuse", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "24 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "MILLET", "prenom": "Charles Denis Emile", "dateNaissance": "14/10/1889", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1281", "matCorps": "05781", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "25 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "ROUSSEL", "prenom": "Maurice Pierre Francisque", "dateNaissance": "17/09/1896", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "878", "matCorps": "13144", "unite": "44e régiment d'infanterie (44e RI)", "dateDeces": "18/04/1917", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Ailles", "deptDeces": "Aisne", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "20 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "PERROT", "prenom": "Henri Denis Germain", "dateNaissance": "04/06/1897", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "589", "matCorps": "18022", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "23/10/1917", "causeDeces": "Tué à l'ennemi", "lieuDeces": "La Malmaison", "deptDeces": "Aisne", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "20 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "SORDET", "prenom": "François Jules Joseph", "dateNaissance": "23/03/1888", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1308", "matCorps": "05791", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "27 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "AUBERT", "prenom": "Marcel Denis Emile", "dateNaissance": "29/10/1893", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Sergent", "matRecrut": "1220", "matCorps": "5501", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "03/03/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Vaux-devant-Damloup", "deptDeces": "Meuse", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "22 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "CHARBONNIER", "prenom": "Jules Denis Philibert", "dateNaissance": "20/08/1887", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1224", "matCorps": "05768", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "28 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "GAUDILLAT", "prenom": "Paul Denis Francisque", "dateNaissance": "04/09/1892", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1257", "matCorps": "4264", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "03/03/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Vaux-devant-Damloup", "deptDeces": "Meuse", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "23 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "MALLEN", "prenom": "Léon Emile Auguste", "dateNaissance": "06/03/1890", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Caporal", "matRecrut": "1276", "matCorps": "2521", "unite": "149e régiment d'infanterie (149e RI)", "dateDeces": "03/03/1916", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Vaux-devant-Damloup", "deptDeces": "Meuse", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "25 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "FAIVRE", "prenom": "Maurice Henri Germain", "dateNaissance": "12/06/1898", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "320", "matCorps": "16190", "unite": "133e régiment d'infanterie (133e RI)", "dateDeces": "09/06/1918", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Ressons-sur-Matz", "deptDeces": "Oise", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "20 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "GENET", "prenom": "Denis Charles François", "dateNaissance": "18/02/1889", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1252", "matCorps": "05771", "unite": "260e régiment d'infanterie (260e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "26 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""},
+        {"nom": "PANOUILLOT", "prenom": "Jean Pierre Paul", "dateNaissance": "18/05/1894", "lieuNaissance": "Poligny", "departement": "Jura", "grade": "Soldat de 2ème classe", "matRecrut": "1028", "matCorps": "7094", "unite": "60e régiment d'infanterie (60e RI)", "dateDeces": "25/09/1915", "causeDeces": "Tué à l'ennemi", "lieuDeces": "Souain", "deptDeces": "Marne", "lieuSepulture": "Poligny", "monument": "Poligny", "age": "21 ans", "mention": "Mort pour la France", "acteNaissance": "x", "acteDeces": "", "ficheGenWeb": "x", "ordreLiberation": "", "ficheMatricule": "x", "memoireHommes": "x", "autresRef": "", "colY": ""}
+    ];
+
+    let entries = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Verification si des surcharges d'images existent dans localStorage
+        const savedLogo = localStorage.getItem('comiteLogoData');
+        if (savedLogo) document.getElementById('app-logo').src = savedLogo;
+
+        const savedPhoto = localStorage.getItem('comitePhotoData');
+        if (savedPhoto) document.getElementById('welcome-photo').src = savedPhoto;
+
+        // Chargement données
+        const storedData = localStorage.getItem('tombesComiteFullDataComplete');
+        if (storedData) {
+            entries = JSON.parse(storedData);
+        } else {
+            entries = JSON.parse(JSON.stringify(initialData));
+            saveData();
+        }
+        renderTable();
+    });
+
+    function uploadImage(event, storageKey, elementId) {
+        if (!isAdmin) return;
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgData = e.target.result;
+                document.getElementById(elementId).src = imgData;
+                localStorage.setItem(storageKey, imgData);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function toggleAdmin() {
+        if (isAdmin) {
+            isAdmin = false;
+            document.body.classList.remove('is-admin');
+            document.getElementById('btn-auth').innerText = "Connexion Admin";
+            renderTable();
+        } else {
+            const pwd = prompt("Entrez le mot de passe administrateur :");
+            if (pwd === ADMIN_PASSWORD) {
+                isAdmin = true;
+                document.body.classList.add('is-admin');
+                document.getElementById('btn-auth').innerText = "Déconnexion Admin";
+                renderTable();
+            } else if (pwd !== null) {
+                alert("Mot de passe incorrect.");
+            }
+        }
+    }
+
+    function saveData() {
+        localStorage.setItem('tombesComiteFullDataComplete', JSON.stringify(entries));
+        renderTable();
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('table-body');
+        const emptyMsg = document.getElementById('empty-msg');
+        tbody.innerHTML = '';
+
+        if (entries.length === 0) {
+            emptyMsg.style.display = 'block';
+        } else {
+            emptyMsg.style.display = 'none';
+            entries.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${escapeHtml(item.nom)}</td>
+                    <td>${escapeHtml(item.prenom)}</td>
+                    <td>${escapeHtml(item.dateNaissance)}</td>
+                    <td>${escapeHtml(item.lieuNaissance)}</td>
+                    <td>${escapeHtml(item.departement)}</td>
+                    <td>${escapeHtml(item.grade)}</td>
+                    <td>${escapeHtml(item.matRecrut)}</td>
+                    <td>${escapeHtml(item.matCorps)}</td>
+                    <td>${escapeHtml(item.unite)}</td>
+                    <td>${escapeHtml(item.dateDeces)}</td>
+                    <td>${escapeHtml(item.causeDeces)}</td>
+                    <td>${escapeHtml(item.lieuDeces)}</td>
+                    <td>${escapeHtml(item.deptDeces)}</td>
+                    <td>${escapeHtml(item.lieuSepulture)}</td>
+                    <td>${escapeHtml(item.monument)}</td>
+                    <td>${escapeHtml(item.age)}</td>
+                    <td>${escapeHtml(item.mention)}</td>
+                    <td>${escapeHtml(item.acteNaissance)}</td>
+                    <td>${escapeHtml(item.acteDeces)}</td>
+                    <td>${escapeHtml(item.ficheGenWeb)}</td>
+                    <td>${escapeHtml(item.ordreLiberation)}</td>
+                    <td>${escapeHtml(item.ficheMatricule)}</td>
+                    <td>${escapeHtml(item.memoireHommes)}</td>
+                    <td style="max-width:120px; word-wrap:break-word; white-space: pre-line;">${escapeHtml(item.autresRef)}</td>
+                    <td>${escapeHtml(item.colY)}</td>
+                    <td class="admin-only">
+                        <button class="btn-edit" onclick="editItem(${index})">✎</button>
+                        <button class="btn-delete" onclick="deleteItem(${index})">✖</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+    }
+
+    function escapeHtml(text) {
+        if (!text) return "";
+        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    function deleteItem(index) {
+        if (!isAdmin) return;
+        if(confirm('Êtes-vous sûr de vouloir supprimer cette entrée ?')) {
+            entries.splice(index, 1);
+            saveData();
+        }
+    }
+
+    function editItem(index) {
+        if (!isAdmin) return;
+        const item = entries[index];
+        document.getElementById('editIndex').value = index;
+        document.getElementById('nom').value = item.nom;
+        document.getElementById('prenom').value = item.prenom;
+        document.getElementById('dateNaissance').value = item.dateNaissance;
+        document.getElementById('lieuNaissance').value = item.lieuNaissance;
+        document.getElementById('departement').value = item.departement;
+        document.getElementById('grade').value = item.grade;
+        document.getElementById('matRecrut').value = item.matRecrut;
+        document.getElementById('matCorps').value = item.matCorps;
+        document.getElementById('unite').value = item.unite;
+        document.getElementById('dateDeces').value = item.dateDeces;
+        document.getElementById('causeDeces').value = item.causeDeces;
+        document.getElementById('lieuDeces').value = item.lieuDeces;
+        document.getElementById('deptDeces').value = item.deptDeces;
+        document.getElementById('lieuSepulture').value = item.lieuSepulture;
+        document.getElementById('monument').value = item.monument;
+        document.getElementById('age').value = item.age;
+        document.getElementById('mention').value = item.mention;
+        document.getElementById('acteNaissance').value = item.acteNaissance;
+        document.getElementById('acteDeces').value = item.acteDeces;
+        document.getElementById('ficheGenWeb').value = item.ficheGenWeb;
+        document.getElementById('ordreLiberation').value = item.ordreLiberation;
+        document.getElementById('ficheMatricule').value = item.ficheMatricule;
+        document.getElementById('memoireHommes').value = item.memoireHommes;
+        document.getElementById('autresRef').value = item.autresRef;
+        document.getElementById('colY').value = item.colY;
+        
+        document.getElementById('modalTitle').innerText = "Modifier l'entrée";
+        document.getElementById('entryModal').style.display = 'block';
+    }
+
+    document.getElementById('entryForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!isAdmin) return;
+        const index = parseInt(document.getElementById('editIndex').value);
+        
+        const newItem = {
+            nom: document.getElementById('nom').value,
+            prenom: document.getElementById('prenom').value,
+            dateNaissance: document.getElementById('dateNaissance').value,
+            lieuNaissance: document.getElementById('lieuNaissance').value,
+            departement: document.getElementById('departement').value,
+            grade: document.getElementById('grade').value,
+            matRecrut: document.getElementById('matRecrut').value,
+            matCorps: document.getElementById('matCorps').value,
+            unite: document.getElementById('unite').value,
+            dateDeces: document.getElementById('dateDeces').value,
+            causeDeces: document.getElementById('causeDeces').value,
+            lieuDeces: document.getElementById('lieuDeces').value,
+            deptDeces: document.getElementById('deptDeces').value,
+            lieuSepulture: document.getElementById('lieuSepulture').value,
+            monument: document.getElementById('monument').value,
+            age: document.getElementById('age').value,
+            mention: document.getElementById('mention').value,
+            acteNaissance: document.getElementById('acteNaissance').value,
+            acteDeces: document.getElementById('acteDeces').value,
+            ficheGenWeb: document.getElementById('ficheGenWeb').value,
+            ordreLiberation: document.getElementById('ordreLiberation').value,
+            ficheMatricule: document.getElementById('ficheMatricule').value,
+            memoireHommes: document.getElementById('memoireHommes').value,
+            autresRef: document.getElementById('autresRef').value,
+            colY: document.getElementById('colY').value
+        };
+
+        if (index === -1) {
+            entries.push(newItem);
+        } else {
+            entries[index] = newItem;
+        }
+
+        saveData();
+        closeModal();
+    });
+
+    function openModal() {
+        if (!isAdmin) return;
+        document.getElementById('editIndex').value = -1;
+        document.getElementById('entryForm').reset();
+        document.getElementById('modalTitle').innerText = "Nouvelle Entrée";
+        document.getElementById('entryModal').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('entryModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('entryModal')) closeModal();
+    }
+
+    function exportToCSV() {
+        if (entries.length === 0) return alert("Aucune donnée à exporter.");
+        
+        const headers = ["Nom", "Prénom", "Date Naissance", "Lieu Naissance", "Département", "Grade", "Matricule Recrutement", "Matricule Corps", "Unité", "Date Décès", "Cause Décès", "Lieu Décès", "Dépt/Pays Décès", "Lieu Sépulture", "Monument", "Age", "Mention", "Acte Naissance", "Acte Décès", "Fiche GENWEB", "Ordre Libération", "Fiche Matricule", "Mémoire Hommes", "Autres Références", "Colonne Y"];
+        const bom = "\uFEFF";
+        let csvContent = "data:text/csv;charset=utf-8," + bom + headers.join(";") + "\n";
+        
+        entries.forEach(item => {
+            const row = [
+                `"${item.nom}"`, `"${item.prenom}"`, `"${item.dateNaissance}"`, `"${item.lieuNaissance}"`,
+                `"${item.departement}"`, `"${item.grade}"`, `"${item.matRecrut}"`, `"${item.matCorps}"`,
+                `"${item.unite}"`, `"${item.dateDeces}"`, `"${item.causeDeces}"`, `"${item.lieuDeces}"`,
+                `"${item.deptDeces}"`, `"${item.lieuSepulture}"`, `"${item.monument}"`, `"${item.age}"`,
+                `"${item.mention}"`, `"${item.acteNaissance}"`, `"${item.acteDeces}"`, `"${item.ficheGenWeb}"`,
+                `"${item.ordreLiberation}"`, `"${item.ficheMatricule}"`, `"${item.memoireHommes}"`,
+                `"${(item.autresRef || "").replace(/"/g, '""')}"`, `"${(item.colY || "").replace(/"/g, '""')}"`
+            ];
+            csvContent += row.join(";") + "\n";
+        });
+
+        const link = document.createElement("a");
+        link.setAttribute("href", encodeURI(csvContent));
+        link.setAttribute("download", "recensement_tombes_poligny.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+</body>
+</html>
+
+
+Envoyé à partir de Outlook pour Android
