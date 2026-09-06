@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Souvenir Français — Comité de Poligny</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0 auto;
+            max-width: 1100px;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        h1, h2 { color: #003366; }
+        h1 { border-bottom: 2px solid #003366; padding-bottom: 10px; }
+        ul { margin-bottom: 20px; }
+        li { margin-bottom: 8px; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            margin-bottom: 30px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #003366;
+            color: white;
+        }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+
+        .badge-comite { color: #d9534f; font-weight: bold; }
+        .badge-famille { color: #337ab7; font-weight: bold; }
+
+        .table-communes td {
+            width: 33%;
+            background-color: #f4f6f9;
+        }
+        
+        #status-message {
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Bienvenue sur le site du Souvenir Français — Comité de Poligny et son secteur</h1>
+
+    <p>Le Souvenir Français veille à ce qu’aucun soldat mort pour la France ne soit oublié. Notre action locale s'articule autour de missions précises de sauvegarde et d'entretien du patrimoine mémoriel.</p>
+
+    <h2>Nos missions fondamentales</h2>
+    <ul>
+        <li><strong>La veille mémorielle annuelle</strong> : un suivi régulier pour recenser les sépultures et s'assurer qu'aucune tombe de soldat « Mort pour la France » ne fasse l'objet d'un relèvement lorsqu'elle est constatée en état d'abandon.</li>
+        <li><strong>L'entretien des tombes</strong> :
+            <ul>
+                <li><strong>Tombes sous la responsabilité du comité</strong> : la rénovation et la prise en charge directe des sépultures en déshérence ou sans famille.</li>
+                <li><strong>Tombes à la charge des familles</strong> : le suivi et l'incitation auprès des ayants droit, qui conservent la responsabilité légale de l'entretien des concessions familiales.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Notre secteur d'intervention</h2>
+    <p>Notre comité intervient sur les 26 communes du territoire :</p>
+
+    <table class="table-communes">
+        <tbody>
+            <tr><td>Abergement-le-Petit</td><td>Champrougier</td><td>Miéry</td></tr>
+            <tr><td>Aumont</td><td>Le Chateley</td><td>Molain</td></tr>
+            <tr><td>Barretaine</td><td>Chemenot</td><td>Montholier</td></tr>
+            <tr><td>Bersaillin</td><td>Colonne</td><td>Neuvilley</td></tr>
+            <tr><td>Besain</td><td>Fay-en-Montagne</td><td>Oussières</td></tr>
+            <tr><td>Biefmorin</td><td>Grozon</td><td>Picarreau</td></tr>
+            <tr><td>Bonnefontaine</td><td>Plasne</td><td>Poligny</td></tr>
+            <tr><td>Brainans</td><td>Tourmont</td><td>Vaux-sur-Poligny</td></tr>
+            <tr><td>Buvilly</td><td>Villers-les-Bois</td><td></td></tr>
+            <tr><td>Chamole</td><td></td><td></td></tr>
+        </tbody>
+    </table>
+
+    <p>Chaque tombe préservée garantit le respect du devoir de mémoire. Rejoignez-nous pour nous aider à protéger ce patrimoine historique commun.</p>
+
+    <hr style="margin: 40px 0; border: 0; border-top: 1px solid #ccc;">
+
+    <h2>Inventaire et recensement des sépultures</h2>
+    <p id="status-message">Chargement des données de recensement...</p>
+
+    <table id="tableau-tombes" style="display: none;">
+        <thead>
+            <tr>
+                <th>Commune</th>
+                <th>Nom & Prénom</th>
+                <th>Emplacement</th>
+                <th>Responsabilité</th>
+                <th>Dernière veille</th>
+                <th>État de la tombe</th>
+            </tr>
+        </thead>
+        <tbody id="corps-tableau">
+            <!-- Les lignes seront insérées dynamiquement ici -->
+        </tbody>
+    </table>
+
+    <script>
+        // Charger le fichier JSON local
+        fetch('tombes.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Erreur de chargement du fichier JSON");
+                }
+                return response.json();
+            })
+            .then(donnees => {
+                const tbody = document.getElementById('corps-tableau');
+                
+                if (donnees.length > 0) {
+                    tbody.innerHTML = '';
+                    
+                    donnees.forEach(ligne => {
+                        const tr = document.createElement('tr');
+                        
+                        const resp = (ligne.responsabilite || '').trim();
+                        const respClass = (resp === 'Comité') ? 'badge-comite' : 'badge-famille';
+                        
+                        tr.innerHTML = `
+                            <td>${ligne.commune || ''}</td>
+                            <td>${ligne.nom || ''}</td>
+                            <td>${ligne.emplacement || ''}</td>
+                            <td class="${respClass}">${resp}</td>
+                            <td>${ligne.derniere_veille || ''}</td>
+                            <td>${ligne.etat || ''}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                    
+                    document.getElementById('status-message').style.display = 'none';
+                    document.getElementById('tableau-tombes').style.display = 'table';
+                } else {
+                    document.getElementById('status-message').textContent = "Aucune donnée de recensement disponible pour le moment.";
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                document.getElementById('status-message').textContent = "Erreur de chargement des données. Assurez-vous que le fichier tombes.json existe.";
+            });
+    </script>
+
+</body>
+</html>
