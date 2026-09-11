@@ -149,7 +149,7 @@
             color: #d9534f;
         }
 
-        /* STYLES FORMULAIRE ADHÉSION & CONTACT */
+        /* STYLES FORMULAIRE ADHÉSION, DON & CONTACT */
         .form-group {
             margin-bottom: 15px;
         }
@@ -258,6 +258,7 @@
     <nav class="nav-tabs">
         <button class="tab-btn active" onclick="ouvrirOnglet(event, 'tab-inventaire')">📜 Inventaire & Accueil</button>
         <button class="tab-btn" onclick="ouvrirOnglet(event, 'tab-adhesion')">💳 Adhésion</button>
+        <button class="tab-btn" onclick="ouvrirOnglet(event, 'tab-don')">🎁 Faire un don</button>
         <button class="tab-btn" onclick="ouvrirOnglet(event, 'tab-contact')">✉️ Contact</button>
     </nav>
 
@@ -398,7 +399,56 @@
         </form>
     </div>
 
-    <!-- ONGLET 3 : CONTACT -->
+    <!-- ONGLET 3 : FAIRE UN DON -->
+    <div id="tab-don" class="tab-content">
+        <h2>Faire un don au Souvenir Français — Comité de Poligny</h2>
+        <p>Vos dons nous permettent de financer la rénovation des tombes en déshérence et de mener des actions pédagogiques locales.</p>
+
+        <form id="form-don" onsubmit="soumettreDon(event)">
+            <div class="adherant-card">
+                <h3 style="margin-top:0; color:#003366;">Informations du donateur</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Montant du don (€) *</label>
+                        <input type="number" id="don-montant" min="1" step="1" value="20" oninput="actualiserTotalDon()" required placeholder="Ex: 20">
+                    </div>
+                    <div class="form-group">
+                        <label>Nom *</label>
+                        <input type="text" id="don-nom" required placeholder="Ex: DUPONT">
+                    </div>
+                    <div class="form-group">
+                        <label>Prénom *</label>
+                        <input type="text" id="don-prenom" required placeholder="Ex: Jean">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="don-email" required placeholder="exemple@email.fr">
+                    </div>
+                    <div class="form-group">
+                        <label>Téléphone *</label>
+                        <input type="tel" id="don-tel" required placeholder="06 00 00 00 00">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Adresse postale complète *</label>
+                    <input type="text" id="don-adresse" required placeholder="N° et nom de rue, Code Postal, Ville">
+                </div>
+            </div>
+
+            <div class="total-box">
+                Montant total du don : <span id="montant-total-don">20</span> €
+            </div>
+
+            <div style="text-align: center;">
+                <p><em>En cliquant sur le bouton ci-dessous, votre promesse de don sera générée par e-mail et vous accéderez au règlement SumUp.</em></p>
+                <button type="submit" class="btn-sumup">💳 Transmettre le don pour finaliser le paiement. Vous recevrez un courriel avec le lien de paiement. Avec tous nos remerciements. Les membres du bureau du comité.</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ONGLET 4 : CONTACT -->
     <div id="tab-contact" class="tab-content">
         <h2>Contactez le Comité de Poligny</h2>
         <p>Pour toute question sur une sépulture, une adhésion, ou pour nous signaler une tombe détériorée dans l'une des 26 communes du secteur, n'hésitez pas à nous contacter.</p>
@@ -539,6 +589,44 @@
 
             const sujet = encodeURIComponent("Demande d'adhésion - Le Souvenir Français");
             const corpsTexte = `Bonjour,\n\nVoici une nouvelle demande d'adhésion pour le comité de Poligny :\n\n${detailsAdherants}Montant total de la cotisation : ${total} €\n\nMerci de me recontacter pour finaliser l'inscription.`;
+            const corps = encodeURIComponent(corpsTexte);
+
+            // Redirection mailto
+            window.location.href = `mailto:${dest}?subject=${sujet}&body=${corps}`;
+
+            // Redirection SumUp après court délai
+            const lienPaiementSumup = "https://pay.sumup.com/";
+            setTimeout(() => {
+                window.open(lienPaiementSumup, '_blank');
+            }, 1000);
+        }
+
+        // DON
+        function actualiserTotalDon() {
+            const val = document.getElementById('don-montant').value;
+            document.getElementById('montant-total-don').textContent = val ? val : '0';
+        }
+
+        function soumettreDon(e) {
+            e.preventDefault();
+
+            const dest = "souvenir_francais_poligny@hotmail.com";
+            const montant = document.getElementById('don-montant').value;
+            const nom = document.getElementById('don-nom').value;
+            const prenom = document.getElementById('don-prenom').value;
+            const email = document.getElementById('don-email').value;
+            const tel = document.getElementById('don-tel').value;
+            const adresse = document.getElementById('don-adresse').value;
+
+            let detailsDon = `--- Informations Donateur ---\n`;
+            detailsDon += `Nom / Prénom : ${nom.toUpperCase()} ${prenom}\n`;
+            detailsDon += `Montant du don : ${montant} €\n`;
+            detailsDon += `Email : ${email}\n`;
+            detailsDon += `Téléphone : ${tel}\n`;
+            detailsDon += `Adresse : ${adresse}\n\n`;
+
+            const sujet = encodeURIComponent("Nouveau Don - Le Souvenir Français");
+            const corpsTexte = `Bonjour,\n\nVoici une promesse de don pour le comité de Poligny :\n\n${detailsDon}Montant total du don : ${montant} €\n\nMerci de me recontacter pour finaliser la transaction.`;
             const corps = encodeURIComponent(corpsTexte);
 
             // Redirection mailto
