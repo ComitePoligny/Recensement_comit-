@@ -347,56 +347,43 @@
             </ul>
         </div>
 
-        <form id="form-adhesion" onsubmit="soumettreAdhesion(event)">
-            <div id="liste-adherants">
-                <div class="adherant-card" id="adherant-1">
-                    <h3 style="margin-top:0; color:#003366;">Adhérent n°1</h3>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Type de cotisation *</label>
-                            <select class="type-cotisation" onchange="calculerTotal()" required>
-                                <option value="10">Adulte (10 €)</option>
-                                <option value="5">Enfant / Jeune (5 €)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Nom *</label>
-                            <input type="text" class="input-nom" required placeholder="Ex: DUPONT">
-                        </div>
-                        <div class="form-group">
-                            <label>Prénom *</label>
-                            <input type="text" class="input-prenom" required placeholder="Ex: Jean">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Email *</label>
-                            <input type="email" class="input-email" required placeholder="exemple@email.fr">
-                        </div>
-                        <div class="form-group">
-                            <label>Téléphone *</label>
-                            <input type="tel" class="input-tel" required placeholder="06 00 00 00 00">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Adresse postale complète *</label>
-                        <input type="text" class="input-adresse" required placeholder="N° et nom de rue, Code Postal, Ville">
-                    </div>
-                </div>
-            </div>
+       (Aucun objet)
+Sébastien Robin
+vous
+function soumettreAdhesion(e) {
+    e.preventDefault();
 
-            <button type="button" class="btn-secondaire" onclick="ajouterAdherant()">+ Ajouter un autre membre (famille...)</button>
+    const dest = "contact@souvenir-francais-poligny.fr"; // Remplacez par votre vraie adresse e-mail
+    const total = document.getElementById('montant-total').textContent;
+    
+    // Récupération des informations de chaque adhérent
+    let detailsAdherants = "";
+    const cartes = document.querySelectorAll('.adherant-card');
 
-            <div class="total-box">
-                Montant total à régler : <span id="montant-total">10</span> €
-            </div>
+    cartes.forEach((carte, index) => {
+        const nom = carte.querySelector('.input-nom').value;
+        const prenom = carte.querySelector('.input-prenom').value;
+        const email = carte.querySelector('.input-email').value;
+        const tel = carte.querySelector('.input-tel').value;
+        const adresse = carte.querySelector('.input-adresse').value;
+        const tarif = carte.querySelector('.type-cotisation').value === "10" ? "Adulte (10€)" : "Jeune (5€)";
 
-            <div style="text-align: center;">
-                <p><em>Vous allez être redirigé vers notre plateforme sécurisée <strong>SumUp</strong> pour effectuer votre paiement par carte bancaire.</em></p>
-                <button type="submit" class="btn-sumup">💳 Payer la cotisation via SumUp</button>
-            </div>
-        </form>
-    </div>
+        detailsAdherants += `--- Adhérent n°${index + 1} ---\n`;
+        detailsAdherants += `Nom / Prénom : ${nom.toUpperCase()} ${prenom}\n`;
+        detailsAdherants += `Cotisation : ${tarif}\n`;
+        detailsAdherants += `Email : ${email}\n`;
+        detailsAdherants += `Téléphone : ${tel}\n`;
+        detailsAdherants += `Adresse : ${adresse}\n\n`;
+    });
+
+    const sujet = encodeURIComponent("Demande d'adhésion - Le Souvenir Français");
+    const corpsTexte = `Bonjour,\n\nVoici une nouvelle demande d'adhésion pour le comité de Poligny :\n\n${detailsAdherants}Montant total de la cotisation : ${total} €\n\nMerci de me recontacter pour finaliser l'inscription.`;
+    
+    const corps = encodeURIComponent(corpsTexte);
+
+    // Redirection vers l'application de messagerie de l'utilisateur
+    window.location.href = `mailto:${dest}?subject=${sujet}&body=${corps}`;
+}
 
     <!-- ONGLET 3 : CONTACT -->
     <div id="tab-contact" class="tab-content">
