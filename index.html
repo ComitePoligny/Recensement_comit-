@@ -1,6 +1,4 @@
-(Aucun objet)
-Sébastien Robin
-vous
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -396,7 +394,7 @@ vous
 
             <div style="text-align: center;">
                 <p><em>En cliquant sur le bouton ci-dessous, votre demande d'adhésion sera générée par e-mail et vous accéderez au règlement SumUp.</em></p>
-                <button type="submit" class="btn-sumup">💳 Transmettre l'adhésion & Payer via SumUp</button>
+                <button type="submit" class="btn-sumup">💳 Transmettre l'adhésion pour finaliser le paiement </button>
             </div>
         </form>
     </div>
@@ -616,7 +614,7 @@ vous
                     const tr = document.createElement('tr');
 
                     const nom = getVal(ligne, ['Nom']);
-                    const prenom = getVal(ligne, ['Prénom', 'Prenom']);
+                    const prenom = getVal(ligne, ['Prénom', 'Prenom', 'prenoms', 'prénoms']);
                     const dateNaiss = getVal(ligne, ['Date de naissance']);
                     const lieuNaiss = getVal(ligne, ['Lieu de naissancedépartement', 'Lieu de naissance']);
                     const numDept = getVal(ligne, ['Numéro de département', 'Numero de departement', 'Num dept']);
