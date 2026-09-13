@@ -698,7 +698,7 @@
                 const causeDeces = getVal(ligne, ['Cause décès', 'Cause deces']);
                 const age = getVal(ligne, ['Age', 'Âge']);
                 const mention = getVal(ligne, ['Mention']);
-                const lieuSepul = getval(ligne, ['Lieu sépulture']);
+                const lieuSepul = getVal(ligne, ['Lieu sépulture']);
                 const acteNaiss = getVal(ligne, ['acte de naissance']);
                 const acteDeces = getVal(ligne, ['acte de décès', 'acte de deces']);
                 const ficheMat = getVal(ligne, ['fiche matricule']);
@@ -728,7 +728,7 @@
                     <td>${causeDeces}</td>
                     <td>${age}</td>
                     <td>${mention}</td>
-                    <td>$(lieuSepul)</td>
+                    <td>${lieuSepul}</td>
                     <td>${creerLien(acteNaiss, 'Acte')}</td>
                     <td>${creerLien(acteDeces, 'Acte')}</td>
                     <td>${creerLien(ficheMat, 'Fiche')}</td>
