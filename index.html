@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -38,6 +39,19 @@
             color: #003366;
             margin: 0;
             font-size: 1.8rem;
+        }
+
+        /* STYLE POUR LE COMPTEUR DE VISITES */
+        .badge-visites {
+            display: inline-block;
+            margin-top: 6px;
+            background-color: #e8f4fd;
+            color: #003366;
+            border: 1px solid #b8daff;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
         }
 
         /* NAVIGATION PAR ONGLETS */
@@ -251,6 +265,8 @@
         <div>
             <h1>Le Souvenir Français</h1>
             <p style="margin: 3px 0 0 0; color: #555; font-weight: bold;">Comité de Poligny et son secteur</p>
+            <!-- AFFICHEUR DU COMPTEUR DE VISITES -->
+            <div id="compteur-visites" class="badge-visites">👁️ Visites : <span id="stats-visites">...</span></div>
         </div>
     </header>
 
@@ -300,7 +316,7 @@
         <hr style="margin: 30px 0; border: 0; border-top: 1px solid #ccc;">
 
         <h2>Inventaire du carré militaire</h2>
-        <p><em>Cliquez sur l'entête "Nom (Fiche)" ou "Lieu sépulture" pour trier par ordre alphabétique. Cliquez sur le nom d'un soldat pour accéder à sa fiche biographique détaillée.</em></p>
+        <p><em>Cliquez sur l'entête "Nom (Fiche)" pour trier par ordre alphabétique. Cliquez sur le nom d'un soldat pour accéder à sa fiche biographique détaillée.</em></p>
 
         <div id="status-message">Chargement du fichier tombes.json en cours...</div>
 
@@ -323,9 +339,7 @@
                         <th>Cause du décès</th>
                         <th>Âge</th>
                         <th>Mention</th>
-                        <th onclick="trierParLieuSepulture()" style="cursor: pointer; user-select: none;" title="Cliquer pour trier par lieu de sépulture">
-                            Lieu sépulture <span id="icone-tri-lieu-sepul">⇅</span>
-                        </th>
+                        <th>Lieu sépulture</th>
                         <th>Acte de naissance</th>
                         <th>Acte de décès</th>
                         <th>Fiche matricule</th>
@@ -678,8 +692,7 @@
 
         // --- DONNÉES ET TRI POUR GITHUB PAGES ---
         let donneesGlobales = [];
-        let triNomAscendant = true;
-        let triLieuSepulAscendant = true;
+        let triAscendant = true;
 
         function affichageTableau(donnees) {
             const tbody = document.getElementById('corps-tableau');
@@ -701,7 +714,7 @@
                 const causeDeces = getVal(ligne, ['Cause décès', 'Cause deces']);
                 const age = getVal(ligne, ['Age', 'Âge']);
                 const mention = getVal(ligne, ['Mention']);
-                const lieuSepul = getVal(ligne, ['Lieu sépulture', 'Lieu sepulture']);
+                const lieuSepul = getVal(ligne, ['Lieu sépulture']);
                 const acteNaiss = getVal(ligne, ['acte de naissance']);
                 const acteDeces = getVal(ligne, ['acte de décès', 'acte de deces']);
                 const ficheMat = getVal(ligne, ['fiche matricule']);
@@ -744,56 +757,26 @@
             });
         }
 
-        function reinitialiserIconesTri() {
-            const iconeNom = document.getElementById('icone-tri-nom');
-            const iconeLieu = document.getElementById('icone-tri-lieu-sepul');
-            if (iconeNom) iconeNom.textContent = '⇅';
-            if (iconeLieu) iconeLieu.textContent = '⇅';
-        }
-
         function trierParNom() {
-            triNomAscendant = !triNomAscendant;
-            reinitialiserIconesTri();
-            
+            triAscendant = !triAscendant;
             const icone = document.getElementById('icone-tri-nom');
             
             donneesGlobales.sort((a, b) => {
                 const nomA = getVal(a, ['Nom']).toLowerCase();
                 const nomB = getVal(b, ['Nom']).toLowerCase();
-                return triNomAscendant 
+                return triAscendant 
                     ? nomA.localeCompare(nomB, 'fr') 
                     : nomB.localeCompare(nomA, 'fr');
             });
 
             if (icone) {
-                icone.textContent = triNomAscendant ? ' ▲' : ' ▼';
+                icone.textContent = triAscendant ? ' ▲' : ' ▼';
             }
 
             affichageTableau(donneesGlobales);
         }
 
-        function trierParLieuSepulture() {
-            triLieuSepulAscendant = !triLieuSepulAscendant;
-            reinitialiserIconesTri();
-
-            const icone = document.getElementById('icone-tri-lieu-sepul');
-
-            donneesGlobales.sort((a, b) => {
-                const lieuA = getVal(a, ['Lieu sépulture', 'Lieu sepulture']).toLowerCase();
-                const lieuB = getVal(b, ['Lieu sépulture', 'Lieu sepulture']).toLowerCase();
-                return triLieuSepulAscendant 
-                    ? lieuA.localeCompare(lieuB, 'fr') 
-                    : lieuB.localeCompare(lieuA, 'fr');
-            });
-
-            if (icone) {
-                icone.textContent = triLieuSepulAscendant ? ' ▲' : ' ▼';
-            }
-
-            affichageTableau(donneesGlobales);
-        }
-
-        // Chargement du fichier tombes.json (Chemin relatif adapté)
+        // Chargement du fichier tombes.json
         fetch('./tombes.json?v=' + new Date().getTime())
             .then(response => {
                 if (!response.ok) {
@@ -813,7 +796,6 @@
                     return;
                 }
 
-                // Conserve l'index d'origine du JSON pour les liens de fiches biographiques
                 donneesGlobales = donnees.map((item, index) => {
                     item._idOriginal = index;
                     return item;
@@ -829,6 +811,20 @@
                 statusDiv.innerHTML = `<strong>ÉCHEC DU CHARGEMENT :</strong> ${err.message}`;
             });
     </script>
+
+    <!-- SCRIPT GOATCOUNTER DE COMPTABILISATION -->
     <script data-goatcounter="https://souvenirfrancaispoligny.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+    <!-- SCRIPT DE RÉCUPÉRATION ET D'AFFICHAGE DES VISITES -->
+    <script>
+        fetch('https://souvenirfrancaispoligny.goatcounter.com/counter/TOTAL.json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('stats-visites').textContent = data.count;
+            })
+            .catch(() => {
+                document.getElementById('compteur-visites').style.display = 'none';
+            });
+    </script>
 </body>
 </html>
