@@ -1,3 +1,10 @@
+(Aucun objet)
+Sébastien Robin
+vous
+Voici le code complet et corrigé de ton fichier index.html intégrant l'Option 2.
+Le script GoatCounter est correctement placé pour enregistrer les données, et un bloc visuel est ajouté au-dessus du pied de page pour afficher automatiquement le nombre total de visites récupéré depuis ton compte GoatCounter.
+> Important : N'oublie pas de te connecter sur souvenirfrancaispoligny.goatcounter.com, d'aller dans Settings (Paramètres) et de cocher la case "Allow public access" (Autoriser l'accès public) pour que l'affichage du chiffre fonctionne.
+> 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -241,6 +248,24 @@
             padding: 15px;
             margin-bottom: 20px;
             border-radius: 4px;
+        }
+
+        /* BLOC VISUEL DU COMPTEUR */
+        .compteur-box {
+            text-align: center;
+            margin-top: 40px;
+            padding: 12px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: #003366;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+        .compteur-chiffre {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #d35400;
         }
     </style>
 </head>
@@ -486,6 +511,11 @@
                 </form>
             </div>
         </div>
+    </div>
+
+    <!-- AFFICHAGE PUBLIC DU COMPTEUR DE VISITES -->
+    <div class="compteur-box">
+        📊 Nombre de visites sur le site : <span id="stats-visites" class="compteur-chiffre">Chargement...</span>
     </div>
 
     <script>
@@ -758,8 +788,19 @@
                 const statusDiv = document.getElementById('status-message');
                 statusDiv.innerHTML = `<strong>ÉCHEC DU CHARGEMENT :</strong> ${err.message}`;
             });
-        
-    <script data-goatcounter="https://souvenirfrancaispoligny.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-</script>
+
+        // RÉCUPÉRATION DU CHIFFRE DU COMPTEUR GOATCOUNTER
+        fetch('https://souvenirfrancaispoligny.goatcounter.com/counter/TOTAL.json')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('stats-visites').textContent = data.count;
+            })
+            .catch(() => {
+                document.getElementById('stats-visites').textContent = 'N/A';
+            });
+    </script>
+
+    <!-- SCRIPT GOATCOUNTER (ENREGISTREMENT DE LA VISITE) -->
+    <script data-goatcounter="https://souvenirfrancaispoligny.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
