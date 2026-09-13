@@ -58,7 +58,8 @@
     "complément": null,
     "FICHIER QRCODE": null,
     "QRCODE": null,
-    "Biographie": "Rien trouvé"
+    "Biographie": "Rien trouvé",
+    "tombe" : "tombe_LOMBARD_Augute.JPG"
   },
   {
     "Nom": "LOMBARD",
@@ -88,7 +89,8 @@
     "complément": null,
     "FICHIER QRCODE": null,
     "QRCODE": null,
-    "Biographie": "Rien trouvé"
+    "Biographie": "Rien trouvé",
+    "tombe":"tombe_LOMBARD_Louis.JPG"
   },
   {
     "Nom": "BEAUD",
