@@ -62,11 +62,48 @@
             font-weight: bold;
         }
 
+        /* SECTION PHOTO & RESUME METADATA */
+        .section-photo-tombe {
+            display: flex;
+            gap: 25px;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .container-photo-tombe {
+            flex: 1;
+            min-width: 260px;
+            max-width: 380px;
+            text-align: center;
+            background: #f4f6f9;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .img-photo-tombe {
+            width: 100%;
+            height: auto;
+            max-height: 350px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .img-photo-tombe:hover {
+            transform: scale(1.02);
+        }
+
         .grid-info {
+            flex: 2;
+            min-width: 280px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 15px;
-            margin-bottom: 30px;
         }
 
         .info-box {
@@ -109,7 +146,7 @@
         }
         .biographie-texte {
             font-size: 1.05rem;
-            white-space: pre-line; /* Conserve les retours à la ligne du texte */
+            white-space: pre-line;
             text-align: justify;
         }
 
@@ -194,18 +231,16 @@
         const id = params.get('id');
 
         fetch('tombes.json?v=' + new Date().getTime())
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Fichier "tombes.json" introuvable (${response.status}).`);
-        }
-        return response.text(); // On lit le texte brut d'abord
-    })
-    .then(text => {
-        // Nettoyage automatique des sauts de ligne non autorisés dans les chaînes JSON
-        const cleanText = text.replace(/[\r\n]+/g, " "); 
-        return JSON.parse(cleanText);
-    })
-    
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Fichier "tombes.json" introuvable (${response.status}).`);
+                }
+                return response.text();
+            })
+            .then(text => {
+                const cleanText = text.replace(/[\r\n]+/g, " "); 
+                return JSON.parse(cleanText);
+            })
             .then(donnees => {
                 const conteneur = document.getElementById('contenu-fiche');
 
@@ -216,6 +251,7 @@
 
                 const d = donnees[id];
 
+                const photoTombe = getVal(d, ['photo_tombe', 'photo tombe', 'Photo tombe', 'PHOTO TOMBE', 'photo']);
                 const nom = getVal(d, ['Nom']);
                 const prenom = getVal(d, ['Prénom', 'Prenom']);
                 const dateNaiss = getVal(d, ['Date de naissance']) || 'Non renseignée';
@@ -250,15 +286,26 @@
                         ${mention ? `<span class="badge-mention">${mention}</span>` : ''}
                     </div>
 
-                    <div class="grid-info">
-                        <div class="info-box"><label>Date de naissance</label><span>${dateNaiss}</span></div>
-                        <div class="info-box"><label>Lieu de naissance</label><span>${lieuNaiss} ${numDept ? '(' + numDept + ')' : ''}</span></div>
-                        <div class="info-box"><label>Date de décès</label><span>${dateDeces}</span></div>
-                        <div class="info-box"><label>Âge au décès</label><span>${age ? age + ' ans' : 'Non renseigné'}</span></div>
-                        <div class="info-box"><label>Cause du décès</label><span>${causeDeces}</span></div>
-                        <div class="info-box"><label>Unité / Régiment</label><span>${unite}</span></div>
-                        <div class="info-box"><label>Matricule recrutement</label><span>${matRecrut}</span></div>
-                        <div class="info-box"><label>Matricule au corps</label><span>${matCorps}</span></div>
+                    <div class="section-photo-tombe">
+                        ${photoTombe ? `
+                            <div class="container-photo-tombe">
+                                <a href="${photoTombe}" target="_blank" title="Cliquez pour agrandir">
+                                    <img src="${photoTombe}" class="img-photo-tombe" alt="Sépulture de ${prenom} ${nom}">
+                                </a>
+                                <p style="font-size:0.8rem; color:#666; margin:6px 0 0 0;"> Photo de la sépulture (cliquer pour agrandir)</p>
+                            </div>
+                        ` : ''}
+
+                        <div class="grid-info">
+                            <div class="info-box"><label>Date de naissance</label><span>${dateNaiss}</span></div>
+                            <div class="info-box"><label>Lieu de naissance</label><span>${lieuNaiss} ${numDept ? '(' + numDept + ')' : ''}</span></div>
+                            <div class="info-box"><label>Date de décès</label><span>${dateDeces}</span></div>
+                            <div class="info-box"><label>Âge au décès</label><span>${age ? age + ' ans' : 'Non renseigné'}</span></div>
+                            <div class="info-box"><label>Cause du décès</label><span>${causeDeces}</span></div>
+                            <div class="info-box"><label>Unité / Régiment</label><span>${unite}</span></div>
+                            <div class="info-box"><label>Matricule recrutement</label><span>${matRecrut}</span></div>
+                            <div class="info-box"><label>Matricule au corps</label><span>${matCorps}</span></div>
+                        </div>
                     </div>
 
                     <!-- BLOC BIOGRAPHIE Rédigée -->
