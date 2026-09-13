@@ -1952,7 +1952,7 @@
   },
   {
     "Nom": "BOIVERT",
-    "Prénom": "Lazard",
+    "Prénom": "Lazare",
     "Date de naissance": "05/10/1922",
     "Lieu de naissance": "Aumont",
     "département": "Jura",
@@ -1979,7 +1979,7 @@
     "FICHIER QRCODE": null,
     "QRCODE": null,
     "Biographie": null,
-    "photo_tomne" : "tombe_BOIVERT_Lazare.JPG"
+    "photo_tombe" : "tombe_BOIVERT_Lazare.JPG"
   },
   {
     "Nom": "BOISSON",
