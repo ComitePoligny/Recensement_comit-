@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -265,6 +264,7 @@
                 const causeDeces = getVal(d, ['Cause décès', 'Cause deces']) || 'Non renseignée';
                 const age = getVal(d, ['Age', 'Âge']);
                 const mention = getVal(d, ['Mention']);
+                const lieuSepul = getVal(d, ['Lieu sépulture', 'Lieu de sepulture', 'Lieu sepulture', 'lieu_sepulture']) || 'Non renseigné';
 
                 const biographie = getVal(d, ['Biographie', 'biographie', 'Bio', 'bio']) || "<em>Aucune biographie rédigée pour le moment pour ce soldat.</em>";
 
@@ -290,7 +290,7 @@
                         ${photoTombe ? `
                             <div class="container-photo-tombe">
                                 <a href="${photoTombe}" target="_blank" title="Cliquez pour agrandir">
-                                    <img src="${photoTombe}" class="img-photo-tombe" alt="Sépulture de ${prenom} ${nom}">
+                                    <img src="${photoTombe}" class="img-photo-tombe" alt="Sépulture de ${prenom}${nom}">
                                 </a>
                                 <p style="font-size:0.8rem; color:#666; margin:6px 0 0 0;"> Photo de la sépulture (cliquer pour agrandir)</p>
                             </div>
@@ -302,6 +302,7 @@
                             <div class="info-box"><label>Date de décès</label><span>${dateDeces}</span></div>
                             <div class="info-box"><label>Âge au décès</label><span>${age ? age + ' ans' : 'Non renseigné'}</span></div>
                             <div class="info-box"><label>Cause du décès</label><span>${causeDeces}</span></div>
+                            <div class="info-box"><label>Lieu de sépulture</label><span>${lieuSepul}</span></div>
                             <div class="info-box"><label>Unité / Régiment</label><span>${unite}</span></div>
                             <div class="info-box"><label>Matricule recrutement</label><span>${matRecrut}</span></div>
                             <div class="info-box"><label>Matricule au corps</label><span>${matCorps}</span></div>
