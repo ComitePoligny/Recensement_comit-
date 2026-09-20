@@ -846,27 +846,14 @@
 
     <!-- SCRIPT RÉCUPÉRATION DATE DE MISE À JOUR (GITHUB API) -->
     <script>
-        // Remplacez par le nom d'utilisateur et le nom du dépôt GitHub
-        const githubUser = 'souvenirfrancaispoligny'; 
-        const githubRepo = 'souvenirfrancaispoligny.github.io'; 
-
-        fetch(`https://api.github.com/repos/${githubUser}/${githubRepo}/commits?per_page=1`)
-            .then(response => {
-                if (!response.ok) throw new Error();
-                return response.json();
-            })
-            .then(data => {
-                if (data && data.length > 0) {
-                    const dateCommit = new Date(data[0].commit.committer.date);
-                    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                    document.getElementById('date-mise-a-jour').textContent = dateCommit.toLocaleDateString('fr-FR', options);
-                } else {
-                    document.getElementById('date-mise-a-jour').textContent = 'Non spécifiée';
-                }
-            })
-            .catch(() => {
-                document.getElementById('date-mise-a-jour').textContent = 'Non disponible';
-            });
+        const dateModif = new Date(document.lastModified);
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        
+        if (!isNaN(dateModif.getTime())) {
+            document.getElementById('date-mise-a-jour').textContent = dateModif.toLocaleDateString('fr-FR', options);
+        } else {
+            document.getElementById('date-mise-a-jour').textContent = 'Non disponible';
+        }
     </script>
 </body>
 </html>
