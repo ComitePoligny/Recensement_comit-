@@ -659,7 +659,8 @@
     "complément": "x",
     "FICHIER QRCODE": null,
     "QRCODE": null,
-    "Biographie": null
+    "Biographie": null,
+    "photo_tombe" : "tombe_FAAIVRE_Abel.JPG"
   },
   {
     "Nom": "BRENIAUX",
@@ -1109,7 +1110,8 @@
     "complément": null,
     "FICHIER QRCODE": null,
     "QRCODE": null,
-    "Biographie": null
+    "Biographie": null,
+    "photo_tombe" : "tombe_BRENIAUX_Maurice.JPG"
   },
   {
     "Nom": "FOURNIER",
@@ -1559,7 +1561,8 @@
     "complément": null,
     "FICHIER QRCODE": null,
     "QRCODE": null,
-    "Biographie": "INFORMATIONS NON TROUVEES"
+    "Biographie": "INFORMATIONS NON TROUVEES",
+    "photo_tombe" : "tombe_BOURGEOIS_Lucien.JPG"
   },
   {
     "Nom": "CHÂTEAU",
@@ -2042,7 +2045,8 @@
     "complément": "Médaille de la résistance",
     "FICHIER QRCODE": null,
     "QRCODE": null,
-    "Biographie": null
+    "Biographie": null,
+    "photo_tombe" : "tombe_BURLET_armand.JPG"
   },
   {
     "Nom": "GOYET",
