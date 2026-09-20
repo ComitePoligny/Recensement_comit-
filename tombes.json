@@ -660,7 +660,7 @@
     "FICHIER QRCODE": null,
     "QRCODE": null,
     "Biographie": null,
-    "photo_tombe" : "tombe_FAAIVRE_Abel.JPG"
+    "photo_tombe" : "tombe_FAIVRE_Abel.JPG"
   },
   {
     "Nom": "BRENIAUX",
@@ -1592,7 +1592,8 @@
     "complément": null,
     "FICHIER QRCODE": null,
     "QRCODE": null,
-    "Biographie": null
+    "Biographie": null,
+    "photo_tombe" : "tombe_CHATEAU_Louis.JPG"
   },
   {
     "Nom": "RUTY",
