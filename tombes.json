@@ -3050,7 +3050,8 @@
     "complément": null,
     "FICHIER QRCODE": null,
     "QRCODE": null,
-    "Biographie": "x"
+    "Biographie": "x",
+    "photo_tombe": "tombe_PARIS_Maurice.jpg"
   },
   {
     "Nom": "HUGON",
@@ -3141,7 +3142,8 @@
     "complément": null,
     "FICHIER QRCODE": "x",
     "QRCODE": null,
-    "Biographie": "x"
+    "Biographie": "x",
+    "photo_tombe": "tombe_GAUDRY_Gaston.jpg"
   },
   {
     "Nom": "GREMAUD",
@@ -3171,7 +3173,8 @@
     "complément": null,
     "FICHIER QRCODE": "x",
     "QRCODE": null,
-    "Biographie": "x"
+    "Biographie": "x",
+    "photo_tombe": "tombe_GREMAUD_Jean-Fernand.jpg"
   },
   {
     "Nom": "PICARD",
@@ -3201,7 +3204,8 @@
     "complément": null,
     "FICHIER QRCODE": "x",
     "QRCODE": null,
-    "Biographie": null
+    "Biographie": null,
+    "photo_tombe": "tombe_PICARD_Adrien.jpg"
   },
   {
     "Nom": "TONNERRE",
@@ -3231,7 +3235,8 @@
     "complément": null,
     "FICHIER QRCODE": null,
     "QRCODE": null,
-    "Biographie": null
+    "Biographie": null,
+    "photo_tombe": "tombe_TONNERRE_Albert.jpg"
   },
   {
     "Nom": "GAY",
@@ -3291,7 +3296,8 @@
     "complément": null,
     "FICHIER QRCODE": null,
     "QRCODE": null,
-    "Biographie": null
+    "Biographie": null,
+    "photo_tombe": "tombe_PROTET_Rene.jpg"
   },
   {
     "Nom": "BREGAND",
@@ -3321,8 +3327,41 @@
     "complément": null,
     "FICHIER QRCODE": null,
     "QRCODE": null,
-    "Biographie": null
+    "Biographie": null,
+    "photo_tombe": "tombe_GREGAND_Rene.jpg"
   },
+  {
+    "Nom": "BREGAND",
+    "Prénom": "André",
+    "Date de naissance": null,
+    "Lieu de naissance": null,
+    "département": null,
+    "Grade": null,
+    "Matricule au recrutement": null,
+    "Matricule au corps": null,
+    "Unité": null,
+    "Date de décès": null,
+    "Cause décès": null,
+    "Lieu du décès": null,
+    "Département ou pays": null,
+    "Lieu sépulture": "Poligny",
+    "Monument aux Morts": null,
+    "Age": null,
+    "Mention": null,
+    "acte de naissance": null,
+    "acte de décès": null,
+    "Fiche Memorial GENWEB": null,
+    "Fiche Ordre de la Libération": null,
+    "fiche matricule": null,
+    "Fiche Mémoire des hommes": null,
+    "Autres références de dossier": null,
+    "complément": null,
+    "FICHIER QRCODE": null,
+    "QRCODE": null,
+    "Biographie": null,
+    "photo_tombe": "tombe_BREGAND_Andre.jpg"
+  },
+  
   {
     "Nom": "VERNE",
     "Prénom": "Jules",
@@ -3351,7 +3390,8 @@
     "complément": null,
     "FICHIER QRCODE": null,
     "QRCODE": null,
-    "Biographie": null
+    "Biographie": null,
+    "photo_tombe": "tombe_VERNE_Jule.jpg"
   },
   {
     "Nom": "VERNE",
@@ -3381,6 +3421,7 @@
     "complément": null,
     "FICHIER QRCODE": null,
     "QRCODE": null,
-    "Biographie": null
+    "Biographie": null,
+    "photo_tombe": "tombe_VERNE_Robert.jpg"
   }
 ]
